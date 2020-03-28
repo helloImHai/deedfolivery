@@ -1,8 +1,16 @@
-import React from "react";
+import React, { Component } from "react";
+import { Provider } from "react-redux";
+import store from "./store";
 
-export default () => (
-  <>
-    <h1>Welcome to React Parcel Micro App!</h1>
-    <p>Hard to get more minimal than this React app.</p>
-  </>
-);
+export default class App extends Component {
+  componentDidMount() {
+    console.log(store.getState());
+  }
+  render() {
+    return (
+      <Provider store={store}>
+        <div>Hello</div>
+      </Provider>
+    );
+  }
+}
