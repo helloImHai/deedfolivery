@@ -3,6 +3,8 @@ import { Provider } from "react-redux";
 import store from "./store";
 import API from "./api";
 import LoginView from "./components/LoginView";
+import CustomerView from "./components/CustomerView";
+import { Route, Switch } from "react-router-dom";
 
 export default class App extends Component {
   componentDidMount() {
@@ -15,7 +17,10 @@ export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <LoginView></LoginView>
+        <Switch>
+          <Route exact path="/" component={LoginView} />
+          <Route path="/customer" component={CustomerView} />
+        </Switch>
       </Provider>
     );
   }

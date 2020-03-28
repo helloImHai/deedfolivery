@@ -21,11 +21,14 @@ export class LoginView extends Component {
       password: this.props.password
     }).then(res => {
       console.log(res.statusText);
-      if (!res.statusText.equals("OK")) {
+      if (!res.statusText == "OK") {
         // TODO CHECK "OK" or NOT
         alert("This username already exists!");
       }
     });
+  };
+  handleSignIn = () => {
+    this.props.history.push(`/${this.props.userType}`);
   };
   handleUsernameChange = event => {
     this.props.handleUsernameChange(event.target.value);
@@ -70,7 +73,7 @@ export class LoginView extends Component {
               onChange={this.handleUsernameChange}
             />
             <Form.Text className="text-muted">
-              We'll never share your email with anyone else.
+              We'll never share your username with anyone else.
             </Form.Text>
           </Form.Group>
 
@@ -82,7 +85,11 @@ export class LoginView extends Component {
               onChange={this.handlePasswordChange}
             />
           </Form.Group>
-          <Button variant="primary" style={{ marginRight: "10px" }}>
+          <Button
+            variant="primary"
+            style={{ marginRight: "10px" }}
+            onClick={this.handleSignIn}
+          >
             Sign in
           </Button>
           <Button variant="secondary" onClick={this.handleSignUp}>

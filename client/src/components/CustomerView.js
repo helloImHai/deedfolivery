@@ -1,18 +1,27 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Button, Jumbotron } from "react-bootstrap";
 
 export class CustomerView extends Component {
   render() {
-    return <User username={this.props.username}></User>;
+    console.log("customer view", this.props);
+    return (
+      <div>
+        <h3>Customer</h3>
+        <User username={this.props.username}></User>
+      </div>
+    );
   }
 }
 
-class User extends PureComponent {
+class User extends Component {
   render() {
+    console.log(this.props);
     return (
-      <ul>
-        <li>Username {this.props.username}</li>
-      </ul>
+      <Jumbotron>
+        <h1>Hello, {this.props.username}</h1>
+        <p>Welcome to our application.</p>
+      </Jumbotron>
     );
   }
 }
