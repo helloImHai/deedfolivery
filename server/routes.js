@@ -7,6 +7,7 @@ router.get("/api/hello", (req, res) => {
 });
 
 /*------------------------------------ CUSTOMER ------------------------------------ */
+
 router.get("/api/get/allcustomers", (req, res) => {
   pool.query(`SELECT * FROM customers`, (q_err, q_res) => {
     // console.log(q_res);
