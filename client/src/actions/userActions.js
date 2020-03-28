@@ -1,20 +1,11 @@
-import {
-  UPDATE_HEIGHT_ABOUT,
-  UPDATE_HEIGHT_EXP,
-  UPDATE_HEIGHT_SKILLS
-} from "./types.js";
+import { UPDATE_USERNAME, UPDATE_PASSWORD } from "./types.js";
 
-export const updateHeightAbout = height => ({
-  type: UPDATE_HEIGHT_ABOUT,
-  payload: height
+export const updateUsername = username => ({
+  type: UPDATE_USERNAME,
+  payload: username
 });
 
-export const updateHeightExp = height => ({
-  type: UPDATE_HEIGHT_EXP,
-  payload: height
-});
-
-export const updateHeightSkills = height => ({
-  type: UPDATE_HEIGHT_SKILLS,
-  payload: height
+export const updatePassword = password => ({
+  type: UPDATE_PASSWORD,
+  payload: password
 });
