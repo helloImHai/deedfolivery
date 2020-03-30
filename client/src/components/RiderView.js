@@ -4,27 +4,21 @@ import { Button, Container, Jumbotron, ListGroup } from "react-bootstrap";
 import API from "../api";
 import Logout from "./Logout";
 
-export class CustomerView extends Component {
+export class RiderView extends Component {
   state = {
-    cname: "",
     email: "",
-    address: "",
-    points: 0,
-    card: 0
+    delivered: 0
   };
 
   fetchUserData() {
-    API.get("/get/customer", {
+    API.get("/get/rider", {
       params: { username: this.props.username }
     }).then(res => {
       console.log("data", res.data[0]);
       this.setState({
         ...this.state,
-        cname: res.data[0].cname,
         email: res.data[0].email,
-        address: res.data[0].address,
-        points: res.data[0].points,
-        card: res.data[0].card
+        delivered: res.data[0].delivered
       });
     });
   }
@@ -37,7 +31,7 @@ export class CustomerView extends Component {
     return (
       <Container>
         <br />
-        <h1>Customer</h1>
+        <h1>Rider</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
         <br />
@@ -55,24 +49,11 @@ class User extends Component {
         <p>Welcome to our application.</p>
         <ListGroup variant="flush">
           <ListGroup.Item>
-            {"Name: " + (this.props.cname == null ? " - " : this.props.cname)}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            {"Card: " + (this.props.card == null ? " - " : this.props.card)}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            {"Address: " +
-              (this.props.address == null ? " - " : this.props.address)}
-          </ListGroup.Item>
-          <ListGroup.Item>
             {"Email: " + (this.props.email == null ? " - " : this.props.email)}
           </ListGroup.Item>
           <ListGroup.Item>
-            {"Points: " +
-              (this.props.points == null ? " - " : this.props.points)}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            {"Card: " + (this.props.card == null ? " - " : this.props.card)}
+            {"Delivered: " +
+              (this.props.delivered == null ? " - " : this.props.delivered)}
           </ListGroup.Item>
         </ListGroup>
       </Jumbotron>
@@ -88,4 +69,4 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(CustomerView);
+export default connect(mapStateToProps, mapDispatchToProps)(RiderView);

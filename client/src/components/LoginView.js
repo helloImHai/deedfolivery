@@ -25,6 +25,9 @@ export class LoginView extends Component {
         // TODO CHECK "OK" or NOT
         alert("This username already exists!");
       }
+      alert(
+        `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
+      );
     });
   };
   handleSignIn = () => {
