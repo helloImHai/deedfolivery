@@ -46,6 +46,9 @@ export class LoginView extends Component {
   render() {
     return (
       <Container className="container-sm" style={{ marginTop: "50px" }}>
+        <br />
+        <h1>Deed Folivery</h1>
+        <br />
         <ToggleButtonGroup
           type="radio"
           name="options"
