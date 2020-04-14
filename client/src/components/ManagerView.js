@@ -15,6 +15,7 @@ import Logout from "./Logout";
 export class ManagerView extends Component {
   state = {
     email: "",
+    count: 0,
   };
 
   fetchUserData() {
@@ -49,8 +50,6 @@ export class ManagerView extends Component {
         <RidersList {...this.state} />
         <br />
         <PendingOrders {...this.state} />
-        <br />
-        <AssignedOrders {...this.state} />
         <br />
         <Logout history={this.props.history}></Logout>
       </Container>
@@ -103,14 +102,25 @@ class RidersList extends Component {
 class PendingOrders extends Component {
   state = {
     pendingOrders: [],
+    assignedOrders: [],
+    id: this.props.id,
   };
-  componentWillMount() {
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ ...this.state, id: nextProps.id });
+    this.fetchPendingOrders();
+  }
+
+  fetchPendingOrders() {
+    console.log("Fetching");
     API.get("/get/allpendingorders")
       .then((res) => {
+        console.log("old pending orders", this.state.pendingOrders);
         this.setState({
           ...this.state,
           pendingOrders: res.data,
         });
+        console.log("new pending orders", this.state.pendingOrders);
       })
       .catch((err) => {
         alert(err.message);
@@ -119,7 +129,24 @@ class PendingOrders extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.log(event.target.riderid.value);
+    const riderid = event.target.riderid.value;
+    const orderid = event.target.orderid.value;
+    const price = event.target.price.value;
+    if (riderid == null) {
+      alert("Rider ID cannot be null");
+      return;
+    }
+    API.post("/post/assigntodb", {
+      rid: riderid,
+      oid: orderid,
+      mid: this.props.id,
+      managerFee: price * 0.02,
+      riderFee: price * 0.05,
+    })
+      .then(() => this.fetchPendingOrders())
+      .catch((err) => {
+        alert("Please choose a rid that is in the Riders list above");
+      });
   };
 
   render() {
@@ -147,9 +174,21 @@ class PendingOrders extends Component {
                     <Form.Row>
                       <Form.Control
                         name="riderid"
-                        style={{ width: 100, marginRight: 10 }}
+                        style={{ width: 80 }}
                         placeholder={0}
                         type="number"
+                      />
+                      <Form.Control
+                        name="orderid"
+                        style={{ width: 0, padding: 2, visibility: "hidden" }}
+                        value={order.oid}
+                        readOnly
+                      />
+                      <Form.Control
+                        name="price"
+                        style={{ width: 0, padding: 2, visibility: "hidden" }}
+                        value={order.cost}
+                        readOnly
                       />
                       <Button type="submit">Assign</Button>
                     </Form.Row>
@@ -160,6 +199,8 @@ class PendingOrders extends Component {
             ))}
           </tbody>
         </Table>
+        <br />
+        <AssignedOrders {...this.state}></AssignedOrders>
       </div>
     );
   }
@@ -170,7 +211,7 @@ class AssignedOrders extends Component {
     assignedOrders: [],
   };
   componentWillReceiveProps(nextProps) {
-    // console.log("received props", nextProps);
+    console.log("received props", nextProps);
     API.get("/get/assignedordersbymid", {
       params: { mid: nextProps.id },
     })
@@ -179,6 +220,7 @@ class AssignedOrders extends Component {
           ...this.state,
           assignedOrders: res.data,
         });
+        console.log("assign", this.state);
       })
       .catch((err) => {
         alert(err.message);
@@ -193,16 +235,16 @@ class AssignedOrders extends Component {
           <tbody>
             <tr>
               <th>Order Id</th>
-              <th>Cost</th>
-              <th>Reward</th>
-              <th>Address</th>
+              <th>Rider Id</th>
+              <th>Rider Fee</th>
+              <th>Manager Fee</th>
             </tr>
-            {this.state.assignedOrders.map((order) => (
-              <tr key={order.oid}>
-                <td>{order.oid}</td>
-                <td>{order.cost}</td>
-                <td>{order.reward}</td>
-                <td>{order.address}</td>
+            {this.state.assignedOrders.map((assign) => (
+              <tr key={assign.oid}>
+                <td>{assign.oid}</td>
+                <td>{assign.riderid}</td>
+                <td>{assign.riderfee}</td>
+                <td>{assign.managerfee}</td>
               </tr>
             ))}
           </tbody>

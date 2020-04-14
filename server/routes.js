@@ -223,12 +223,33 @@ router.get("/api/get/allpendingorders", (req, res) => {
   );
 });
 
+/*------------------------------------ ASSIGNS ------------------------------------ */
+
 router.get("/api/get/assignedordersbymid", (req, res) => {
   const mid = req.query.mid;
   pool.query(
-    `SELECT * FROM orders
-    WHERE oid IN(SELECT oid FROM assigns WHERE mid = $1)`,
+    `SELECT * FROM assigns
+    WHERE mid = $1`,
     [mid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.post("/api/post/assigntodb", (req, res) => {
+  const { rid, oid, mid, managerFee, riderFee } = req.body;
+  console.log(req.body);
+  pool.query(
+    `INSERT INTO assigns(riderid, oid, mid, managerFee, riderFee)
+    VALUES($1, $2, $3, $4, $5)
+    RETURNING (mid);`,
+    [rid, oid, mid, managerFee, riderFee],
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
