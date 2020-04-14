@@ -17,6 +17,7 @@ router.get("/api/get/allcustomers", (req, res) => {
 
 router.get("/api/get/customer", (req, res) => {
   const username = req.query.username;
+  console.log(req.query.username);
   pool.query(
     `SELECT * FROM customers WHERE username = $1`,
     [username],
@@ -113,6 +114,16 @@ router.get("/api/get/restaurant", (req, res) => {
       res.json(q_res.rows);
     }
   );
+});
+
+/*------------------------------------ FOOD ITEMS ------------------------------------ */
+
+router.get("/api/get/fooditems", (req, res) => {
+  const rid = req.query.rid;
+  pool.query(`SELECT * FROM sells WHERE rid = $1`, [rid], (q_err, q_res) => {
+    // console.log(q_res);
+    res.json(q_res.rows);
+  });
 });
 
 /*------------------------------------ RIDER ------------------------------------ */

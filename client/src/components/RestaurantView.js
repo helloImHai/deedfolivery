@@ -3,26 +3,29 @@ import { connect } from "react-redux";
 import { Button, Container, Jumbotron, ListGroup } from "react-bootstrap";
 import API from "../api";
 import Logout from "./Logout";
+import Kitchen from "./Kitchen";
 
 export class RestaurantView extends Component {
   state = {
     rname: "",
     email: "",
     address: "",
-    minspend: 0
+    minspend: 0,
+    id: -1,
   };
 
   fetchUserData() {
     API.get("/get/restaurant", {
-      params: { username: this.props.username }
-    }).then(res => {
+      params: { username: this.props.username },
+    }).then((res) => {
       console.log("data", res.data[0]);
       this.setState({
         ...this.state,
+        id: res.data[0].rid,
         rname: res.data[0].rname,
         email: res.data[0].email,
         address: res.data[0].address,
-        minspend: res.data[0].minspend
+        minspend: res.data[0].minspend,
       });
     });
   }
@@ -38,6 +41,9 @@ export class RestaurantView extends Component {
         <h1>Restaurant</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
+        <br />
+        <Kitchen {...this.state}></Kitchen>
+        <br />
         <br />
         <Logout history={this.props.history}></Logout>
       </Container>
@@ -72,10 +78,10 @@ class User extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
 const mapDispatchToProps = {};
