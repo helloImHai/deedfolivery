@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS Intervals CASCADE;
 CREATE TABLE Customers (
     cid             SERIAL PRIMARY KEY,
     cname           VARCHAR(50),
-    username        VARCHAR(50) UNIQUE,
+    username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
@@ -35,7 +35,7 @@ CREATE TABLE Customers (
 CREATE TABLE Restaurants (
     rid             SERIAL PRIMARY KEY,
     rname           VARCHAR(50),
-    username        VARCHAR(50) UNIQUE,
+    username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
@@ -44,7 +44,7 @@ CREATE TABLE Restaurants (
 
 CREATE TABLE Riders (
     riderid         SERIAL PRIMARY KEY,
-    username        VARCHAR(50) UNIQUE,
+    username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16),
     delivered       INTEGER
@@ -52,18 +52,19 @@ CREATE TABLE Riders (
 
 CREATE TABLE Managers (
 	mid 			SERIAL PRIMARY KEY,
-    username        VARCHAR(50) UNIQUE,
+    username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16)
 );
 
 CREATE TABLE Sells (
-    rid             INTEGER,
-    item            VARCHAR(50),
+    iid             SERIAL PRIMARY KEY,
+    rid             INTEGER NOT NULL,
+    item            VARCHAR(50) NOT NULL,
     price           FLOAT,
     quantity        INTEGER,
     category        VARCHAR(50),
-    PRIMARY KEY (rid, item),
+    UNIQUE (rid, item),
     FOREIGN KEY (rid) REFERENCES Restaurants ON DELETE CASCADE
 );
 
@@ -97,11 +98,11 @@ CREATE TABLE Places (
 
 CREATE TABLE Lists (
     oid             INTEGER,
-    rid             INTEGER,
-    item            VARCHAR(50),
-    PRIMARY KEY (oid, rid, item),
-    FOREIGN KEY (oid) REFERENCES Orders,
-    FOREIGN KEY (rid, item) REFERENCES Sells
+    iid             INTEGER,
+    quantity        INTEGER,
+    PRIMARY KEY (oid, iid),
+    FOREIGN KEY (oid) REFERENCES Orders ON DELETE CASCADE,
+    FOREIGN KEY (iid) REFERENCES Sells ON DELETE CASCADE
 );
 
 CREATE TABLE Assigns (
@@ -166,7 +167,6 @@ CREATE TABLE Weeks (
     day3shift       INTEGER,
     day4shift       INTEGER,
     day5shift       INTEGER,
-    weekHours       INTEGER,
     PRIMARY KEY (wid)
 );
 
