@@ -16,7 +16,9 @@ export class RestaurantView extends Component {
 
   fetchUserData() {
     API.get("/get/restaurant", {
-      params: { username: this.props.username },
+      params: {
+        username: this.props.username,
+      },
     }).then((res) => {
       console.log("data", res.data[0]);
       this.setState({
@@ -27,6 +29,15 @@ export class RestaurantView extends Component {
         address: res.data[0].address,
         minspend: res.data[0].minspend,
       });
+    });
+
+    API.get("/get/restaurantwithpassword", {
+      params: {
+        username: this.props.username,
+        password: this.props.password,
+      },
+    }).then((res) => {
+      console.log("get with password", res.data[0]);
     });
   }
 

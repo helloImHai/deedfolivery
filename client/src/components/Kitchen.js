@@ -6,6 +6,7 @@ export default class Kitchen extends Component {
   state = {
     foodItems: [],
     newFoodName: "",
+    newCategory: "",
     newFoodPrice: 0,
     newFoodQuota: 0,
   };
@@ -19,6 +20,9 @@ export default class Kitchen extends Component {
   handleQuotaChange = (event) => {
     this.setState({ ...this.state, newFoodQuota: event.target.value });
   };
+  handleCategoryChange = (event) => {
+    this.setState({ ...this.state, newCategory: event.target.value });
+  };
 
   fetchRestaurantData(nextProps) {
     console.log("fetching restaurant data");
@@ -31,8 +35,43 @@ export default class Kitchen extends Component {
     });
   }
 
+  fetchFoodItems = () => {
+    API.get("/get/fooditems", {
+      params: { rid: this.props.id },
+    }).then((res) => {
+      this.setState({ ...this.state, foodItems: res.data });
+      console.log("data", res.data);
+    });
+  };
+
+  handleAddNewFoodItem = () => {
+    const { id } = this.props;
+    const { newFoodName, newFoodPrice, newFoodQuota, newCategory } = this.state;
+    if (
+      newFoodName == "" ||
+      newFoodPrice <= 0 ||
+      newFoodQuota < 0 ||
+      newCategory == ""
+    ) {
+      alert("Invalid parameters for new food item");
+      return;
+    }
+    API.post("/post/fooditemtodb", {
+      rid: id,
+      iname: newFoodName,
+      price: newFoodPrice,
+      quota: newFoodQuota,
+      category: newCategory,
+    }).then((res) => {
+      if (res.data.length == 0) {
+        alert("Item not added");
+      } else {
+        this.fetchFoodItems();
+      }
+    });
+  };
+
   componentWillReceiveProps(nextProps) {
-    // console.log("fetching restaurant data");
     this.fetchRestaurantData(nextProps);
   }
 
@@ -68,7 +107,17 @@ export default class Kitchen extends Component {
               />
             </Col>
             <Col>
-              <Button variant="primary" style={{ marginRight: "10px" }}>
+              <Form.Control
+                placeholder="Category"
+                onChange={this.handleCategoryChange}
+              />
+            </Col>
+            <Col>
+              <Button
+                variant="primary"
+                style={{ marginRight: "10px" }}
+                onClick={this.handleAddNewFoodItem}
+              >
                 Create
               </Button>
             </Col>
@@ -87,12 +136,14 @@ const FoodItem = ({ foodItems }) => (
           <th>Name</th>
           <th>Price</th>
           <th>Quota</th>
+          <th>Category</th>
         </tr>
         {foodItems.map((item) => (
-          <tr horizontal key={item.iid}>
+          <tr key={item.iid}>
             <td>{item.iname}</td>
             <td>{item.price}</td>
             <td>{item.quota}</td>
+            <td>{item.category}</td>
           </tr>
         ))}
       </tbody>
