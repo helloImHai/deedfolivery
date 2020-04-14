@@ -118,6 +118,7 @@ CREATE TABLE Employs (
 );
 
 CREATE TABLE Assigns (
+    oid             INTEGER,
     mid             INTEGER,
     riderid         INTEGER,
     acceptTime      VARCHAR(50),
@@ -125,7 +126,8 @@ CREATE TABLE Assigns (
     leaveTime       VARCHAR(50),
     deliveryTime    VARCHAR(50),
     fee             FLOAT,
-    PRIMARY KEY (mid, riderid),
+    PRIMARY KEY (mid, riderid, oid),
+    FOREIGN KEY (oid) REFERENCES Orders,
     FOREIGN KEY (mid) REFERENCES Managers,
     FOREIGN KEY (riderid) REFERENCES Riders
 );

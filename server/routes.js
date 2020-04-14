@@ -200,4 +200,44 @@ router.get("/api/get/rider", (req, res) => {
   );
 });
 
+router.get("/api/get/allriders", (req, res) => {
+  pool.query(`SELECT * FROM riders`, (q_err, q_res) => {
+    res.json(q_res.rows);
+  });
+});
+
+/*------------------------------------ ORDER ------------------------------------ */
+
+router.get("/api/get/allpendingorders", (req, res) => {
+  pool.query(
+    `SELECT * FROM orders
+    WHERE oid NOT IN(SELECT oid FROM assigns)`,
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.get("/api/get/assignedordersbymid", (req, res) => {
+  const mid = req.query.mid;
+  pool.query(
+    `SELECT * FROM orders
+    WHERE oid IN(SELECT oid FROM assigns WHERE mid = $1)`,
+    [mid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
 module.exports = router;
