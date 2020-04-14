@@ -62,13 +62,19 @@ export default class Kitchen extends Component {
       price: newFoodPrice,
       quota: newFoodQuota,
       category: newCategory,
-    }).then((res) => {
-      if (res.data.length == 0) {
-        alert("Item not added");
-      } else {
-        this.fetchFoodItems();
-      }
-    });
+    })
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert("Item not added");
+        } else {
+          this.fetchFoodItems();
+        }
+      })
+      .catch(() => {
+        alert(
+          "Add item unsuccessful, check for duplicate name or very long parameters."
+        );
+      });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -153,9 +159,9 @@ class FoodItem extends Component {
           </tr>
           {this.props.foodItems.map((item) => (
             <tr key={item.iid}>
-              <td>{item.iname}</td>
+              <td>{item.item}</td>
               <td>{item.price}</td>
-              <td>{item.quota}</td>
+              <td>{item.quantity}</td>
               <td>{item.category}</td>
               <td>
                 <Button onClick={this.handleDelete.bind(this, item)}>

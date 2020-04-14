@@ -140,9 +140,9 @@ router.post("/api/post/fooditemtodb", (req, res, next) => {
     req.body.category,
   ];
   pool.query(
-    `INSERT INTO sells(rid, iname, price, quota, category)
+    `INSERT INTO sells(rid, item, price, quantity, category)
               VALUES($1, $2, $3, $4, $5)
-              RETURNING (iname)`,
+              RETURNING (item)`,
     values,
     (q_err, q_res) => {
       if (q_err) {

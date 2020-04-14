@@ -108,7 +108,6 @@ CREATE TABLE Lists (
 CREATE TABLE Assigns (
     oid             INTEGER,
     mid             INTEGER,
-    oid             INTEGER,
     riderid         INTEGER,
     acceptTime      VARCHAR(50),
     reacheTime      VARCHAR(50),
