@@ -44,6 +44,7 @@ CREATE TABLE Restaurants (
 
 CREATE TABLE Riders (
     riderid         SERIAL PRIMARY KEY,
+    ridername       VARCHAR(50),
     username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16),
@@ -52,6 +53,7 @@ CREATE TABLE Riders (
 
 CREATE TABLE Managers (
 	mid 			SERIAL PRIMARY KEY,
+    mname           VARCHAR(50),
     username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16)
@@ -79,7 +81,7 @@ CREATE TABLE Orders (
 
 CREATE TABLE Reviews (
     cid             INTEGER,
-    oid             INTEGER,
+    oid             INTEGER UNIQUE,
     review          VARCHAR(250),
     rating          INTEGER,
     PRIMARY KEY (cid, oid),
@@ -89,8 +91,8 @@ CREATE TABLE Reviews (
 
 CREATE TABLE Places (
     cid             INTEGER,
-    oid             INTEGER,
-    ordertime       VARCHAR(50),
+    oid             INTEGER UNIQUE,
+    ordertime       TIMESTAMP,
     PRIMARY KEY (cid, oid),
     FOREIGN KEY (cid) REFERENCES Customers,
     FOREIGN KEY (oid) REFERENCES Orders
@@ -109,10 +111,10 @@ CREATE TABLE Assigns (
     mid             INTEGER,
     oid             INTEGER,
     riderid         INTEGER,
-    acceptTime      VARCHAR(50),
-    reacheTime      VARCHAR(50),
-    leaveTime       VARCHAR(50),
-    deliveryTime    VARCHAR(50),
+    acceptTime      TIMESTAMP,
+    reachedTime     TIMESTAMP,
+    leaveTime       TIMESTAMP,
+    deliveryTime    TIMESTAMP,
     managerFee      FLOAT,
     riderFee        FLOAT,
     PRIMARY KEY (mid, oid, riderid),
@@ -125,9 +127,10 @@ CREATE TABLE Promotions (
     pid             INTEGER,
     category        VARCHAR(20),
     value           FLOAT,
-    startDate       VARCHAR(50),
-    endDate         VARCHAR(50),
-    PRIMARY KEY (pid)
+    startDate       DATE,
+    endDate         DATE,
+    PRIMARY KEY (pid),
+    check (startDate < endDate)
 );
 
 CREATE TABLE ROffers (
@@ -161,12 +164,18 @@ CREATE TABLE FullTimers (
 
 CREATE TABLE Weeks (
     wid             INTEGER,
-    daysOption      INTEGER, --must belong to 1 of 7 options: Monday to Friday, Tuesday to Saturday, Wednesday to Sunday, Thursday to Monday, Friday to Tuesday, Saturday to Wednesday, or Sunday to Thursday.
-    day1shift       INTEGER,
-    day2shift       INTEGER,
-    day3shift       INTEGER,
-    day4shift       INTEGER,
-    day5shift       INTEGER,
+    daysOption      INTEGER
+                    check (daysOption in (1,2,3,4,5,6,7)),
+    day1shift       INTEGER
+                    check (day1shift in (1,2,3,4)),
+    day2shift       INTEGER
+                    check (day2shift in (1,2,3,4)),
+    day3shift       INTEGER
+                    check (day3shift in (1,2,3,4)),
+    day4shift       INTEGER
+                    check (day4shift in (1,2,3,4)),
+    day5shift       INTEGER
+                    check (day5shift in (1,2,3,4)),
     PRIMARY KEY (wid)
 );
 
@@ -188,10 +197,12 @@ CREATE TABLE PartTimers (
 
 CREATE TABLE Intervals (
     intervalid      INTEGER,
-    day             VARCHAR(50),
+    day             VARCHAR(50)
+                    check (day in ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
     startTime       INTEGER,
     endTime         INTEGER,
-    PRIMARY KEY (intervalid)
+    PRIMARY KEY (intervalid),
+    check (startTime < endTime)
 );
 
 CREATE TABLE PWorks (
@@ -201,3 +212,139 @@ CREATE TABLE PWorks (
     FOREIGN KEY (riderid) REFERENCES PartTimers,
     FOREIGN KEY (intervalid) REFERENCES Intervals
 );
+
+---------------------- POPULATE DATA ------------------------------------------------------------------------
+
+INSERT INTO Customers VALUES
+    (1, 'Duong', 'duong', 'duong@gmail.com', 'duongpass', '51 PHT', 0, 1234),
+    (2, 'Hai', 'hai', 'hai@gmail.com', 'haipass', '15 Balmoral Park', 0, 2345),
+    (3, 'Hung', 'hung', 'hung@gmail.com', 'hungpass', '6 Tembusu', 0, 3456),
+    (4, 'Hoang', 'hoang', 'hoang@gmail.com', 'hoangpass', 'nigga', 0, 4567),
+    (5, 'Christian', 'cjw', 'christian@gmail.com', 'christianpass', 'amortized', 0, 2345);
+
+INSERT INTO Restaurants VALUES
+    (1, 'KFC', 'kfc', 'kfc@gmail.com', 'kfcpass', '123 KFC', 5),
+    (2, 'Burger King', 'bk', 'bk@gmail.com', 'bkpass', '123 Burger King', 7),
+    (3, 'McDonald', 'md', 'md@gmail.com', 'mdpass', '123 McDonal', 5),
+    (4, 'Starbucks', 'sb', 'sb@gmail.com', 'sbpass', '123 Starbucks', 10),
+    (5, 'Koi', 'koi', 'koi@gmail.com', 'koipass', '123 Koi', 8);
+
+INSERT INTO Riders VALUES
+    (1, 'Tom Rider', 'tom', 'tom@gmail.com', 'tompass', 0),
+    (2, 'Jerry Rider', 'jerry', 'jerry@gmail.com', 'jerrypass', 0),
+    (3, 'Free Rider', 'free', 'free@gmail.com', 'freepass', 0),
+    (4, 'Ghost Rider', 'ghost', 'ghost@gmail.com', 'ghostpass', 0),
+    (5, 'Flynn Rider', 'flynn', 'flynn@gmail.com', 'flynnpass', 0),
+    (6, 'Grab Rider', 'grab', 'grab@gmail.com', 'grabpass', 0);
+
+INSERT INTO Managers VALUES
+    (1, 'Boss', 'boss', 'boss@gmail.com', 'bosspass'),
+    (2, 'Chief', 'chief', 'chief@gmail.com', 'chiefpass'),
+    (3, 'Man', 'man', 'man@gmail.com', 'manpass'),
+    (4, 'Ager', 'ager', 'ager@gmail.com', 'agerpass'),
+    (5, 'CJW', 'cjw', 'cjw@gmail.com', 'cjwpass');
+
+INSERT INTO Sells VALUES
+    (1, 1, 'chicken', 5, 100, 'main'),
+    (2, 1, 'ice cream', 2, 100, 'dessert'),
+    (3, 2, 'burger', 6, 100, 'main'),
+    (4, 2, 'coke', 3, 100, 'drink'),
+    (5, 3, 'burger', 5, 100, 'main'),
+    (6, 3, 'coke', 2, 100, 'drink'),
+    (7, 4, 'coffee', 6, 100, 'hot'),
+    (8, 4, 'frape', 6, 100, 'cold'),
+    (9, 5, 'tea', 4, 100, 'cold'),
+    (10, 5, 'coffe', 4, 100, 'hot');
+
+INSERT INTO Orders VALUES
+    (1, 'cash', null, 8, 7, '15 Balmoral Park'),
+    (2, 'cash', null, 12, 9, '15 Balmoral Park'),
+    (3, 'card', 2345, 10, 7, '15 Balmoral Park'),
+    (4, 'cash', null, 11, 12, 'SOC'),
+    (5, 'card', 1234, 11, 8, 'Eusoff');
+
+INSERT INTO Lists VALUES
+    (1, 1, 1),
+    (1, 2, 1),
+    (2, 3, 1),
+    (2, 4, 1),
+    (3, 5, 1),
+    (3, 6, 1),
+    (4, 7, 1),
+    (4, 8, 1),
+    (5, 9, 1),
+    (5, 10, 1);
+
+INSERT INTO Places VALUES
+    (2, 1, '2020-04-15 10:23:54'),
+    (2, 2, '2020-04-15 10:23:54'),
+    (2, 3, '2020-04-15 10:23:54'),
+    (1, 4, '2020-04-15 10:23:54'),
+    (1, 5, '2020-04-15 10:23:54');
+
+INSERT INTO Reviews VALUES
+    (2, 1, 'wow very good', 5),
+    (2, 2, 'wow good', 4),
+    (2, 3, 'good', 3),
+    (1, 4, 'nicee', 5),
+    (1, 5, 'not bad', 4);
+
+INSERT INTO Assigns VALUES 
+    (1, 1, 1, null, null, null, null, 2, 1),
+    (1, 2, 4, null, null, null, null, 2, 1),
+    (1, 3, 2, null, null, null, null, 2, 1),
+    (1, 4, 1, null, null, null, null, 2, 1),
+    (1, 5, 3, null, null, null, null, 2, 1);
+
+INSERT INTO Promotions VALUES
+    (1, 'abc', 2, '2020-04-15', '2020-12-15'),
+    (2, 'xyz', 3, '2020-03-15', '2020-11-15'),
+    (3, '123', 1, '2020-03-16', '2020-11-16'),
+    (4, '456', 4, '2020-04-16', '2020-12-16');
+
+INSERT INTO ROffers VALUES
+    (1, 1), (2, 3);
+
+INSERT INTO MOffers VALUES
+    (3, 4), (4, 4);
+
+INSERT INTO Claims VALUES
+    (1, 1), (4, 4);
+
+INSERT INTO FullTimers VALUES
+    (1, 1500), (3, 2000), (5, 1750);
+
+INSERT INTO Weeks VALUES
+    (1, 1, 1, 1, 1, 1, 1),
+    (2, 4, 1, 3, 3, 4, 2),
+    (3, 2, 3, 1, 2, 2, 4);
+
+INSERT INTO FWorks VALUES
+    (1, 1), (2, 2), (3, 3);
+
+INSERT INTO PartTimers VALUES
+    (2, 300, 30), (4, 440, 44), (6, 350, 35);
+
+INSERT INTO Intervals VALUES
+    (1, 'Monday', 10, 13),
+    (2, 'Monday', 16, 18),
+    (3, 'Monday', 19, 20),
+    (4, 'Tuesday', 10, 13),
+    (5, 'Tuesday', 16, 18),
+    (6, 'Tuesday', 19, 20),
+    (7, 'Wednesday', 10, 13),
+    (8, 'Wednesday', 16, 18),
+    (9, 'Wednesday', 19, 20),
+    (10, 'Thursday', 10, 13),
+    (11, 'Thursday', 16, 18),
+    (12, 'Thursday', 19, 20),
+    (13, 'Saturday', 10, 13),
+    (14, 'Saturday', 17, 20),
+    (15, 'Sunday', 10, 13),
+    (16, 'Sunday', 17, 20);
+
+INSERT INTO PWorks VALUES
+    (2, 1), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (2, 10), (2, 11), (2, 12),
+    (4, 1), (4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (4, 7), (4, 8), (4, 9), (4, 10), (4, 11), (4, 12), (4, 13), (4, 14), (4, 15), (4, 16),
+    (6, 1), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7), (6, 8), (6, 9), (6, 10), (6, 11), (6, 12), (6, 15);
+
