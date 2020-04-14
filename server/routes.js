@@ -130,7 +130,7 @@ router.get("/api/get/restaurantwithpassword", (req, res) => {
 
 /*------------------------------------ FOOD ITEMS ------------------------------------ */
 
-router.get("/api/get/fooditems", (req, res) => {
+router.get("/api/get/fooditemsbyrid", (req, res) => {
   const rid = req.query.rid;
   pool.query(`SELECT * FROM sells WHERE rid = $1`, [rid], (q_err, q_res) => {
     // console.log(q_res);

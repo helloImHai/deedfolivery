@@ -36,7 +36,7 @@ export default class Kitchen extends Component {
   }
 
   fetchFoodItems = () => {
-    API.get("/get/fooditems", {
+    API.get("/get/fooditemsbyrid", {
       params: { rid: this.props.id },
     }).then((res) => {
       this.setState({ ...this.state, foodItems: res.data });
