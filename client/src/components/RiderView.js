@@ -7,20 +7,24 @@ import Logout from "./Logout";
 export class RiderView extends Component {
   state = {
     email: "",
-    delivered: 0
+    delivered: 0,
   };
 
   fetchUserData() {
     API.get("/get/rider", {
-      params: { username: this.props.username }
-    }).then(res => {
-      console.log("data", res.data[0]);
-      this.setState({
-        ...this.state,
-        email: res.data[0].email,
-        delivered: res.data[0].delivered
+      params: { username: this.props.username },
+    })
+      .then((res) => {
+        console.log("data", res.data[0]);
+        this.setState({
+          ...this.state,
+          email: res.data[0].email,
+          delivered: res.data[0].delivered,
+        });
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    });
   }
 
   componentWillMount() {
@@ -61,10 +65,10 @@ class User extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
 const mapDispatchToProps = {};

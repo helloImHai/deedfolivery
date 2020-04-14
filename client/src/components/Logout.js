@@ -12,6 +12,8 @@ export default class Logout extends Component {
         <Button variant="primary" onClick={this.handleLogout}>
           Logout
         </Button>
+        <br></br>
+        <br></br>
       </div>
     );
   }

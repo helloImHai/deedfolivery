@@ -19,26 +19,21 @@ export class RestaurantView extends Component {
       params: {
         username: this.props.username,
       },
-    }).then((res) => {
-      console.log("data", res.data[0]);
-      this.setState({
-        ...this.state,
-        id: res.data[0].rid,
-        rname: res.data[0].rname,
-        email: res.data[0].email,
-        address: res.data[0].address,
-        minspend: res.data[0].minspend,
+    })
+      .then((res) => {
+        console.log("data", res.data[0]);
+        this.setState({
+          ...this.state,
+          id: res.data[0].rid,
+          rname: res.data[0].rname,
+          email: res.data[0].email,
+          address: res.data[0].address,
+          minspend: res.data[0].minspend,
+        });
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    });
-
-    API.get("/get/restaurantwithpassword", {
-      params: {
-        username: this.props.username,
-        password: this.props.password,
-      },
-    }).then((res) => {
-      console.log("get with password", res.data[0]);
-    });
   }
 
   componentWillMount() {

@@ -20,6 +20,11 @@ router.get("/api/get/customer", (req, res) => {
     `SELECT * FROM customers WHERE username = $1`,
     [username],
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       console.log(q_res.rows);
       res.json(q_res.rows);
     }
@@ -36,6 +41,11 @@ router.post("/api/post/customertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -130,12 +140,16 @@ router.post("/api/post/fooditemtodb", (req, res, next) => {
     req.body.category,
   ];
   pool.query(
-    `INSERT INTO sells(rid, iname, price, quota, category)
+    `INSERT INTO sells(rid, item, price, quantity, category)
               VALUES($1, $2, $3, $4, $5)
-              RETURNING (iname)`,
+              RETURNING (item)`,
     values,
     (q_err, q_res) => {
-      //TODO: CHECK IF PERSON ALREADY EXISTS
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       if (q_res.rows.length == 0) {
         res.json("Not added");
       } else {
@@ -143,6 +157,19 @@ router.post("/api/post/fooditemtodb", (req, res, next) => {
       }
     }
   );
+});
+
+router.delete("/api/delete/fooditembyiid", (req, res) => {
+  const values = [req.body.iid];
+  pool.query(`DELETE FROM sells where iid = $1`, values, (q_err, q_res) => {
+    if (q_err) {
+      return res.status(400).send({
+        message: "This is an error!",
+      });
+    }
+    console.log("Deleted item with iid", values[0]);
+    res.json("Delete successful");
+  });
 });
 
 /*------------------------------------ RIDER ------------------------------------ */
@@ -168,6 +195,67 @@ router.get("/api/get/rider", (req, res) => {
     `SELECT * FROM riders WHERE username = $1`,
     [username],
     (q_err, q_res) => {
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.get("/api/get/allriders", (req, res) => {
+  pool.query(`SELECT * FROM riders`, (q_err, q_res) => {
+    res.json(q_res.rows);
+  });
+});
+
+/*------------------------------------ ORDER ------------------------------------ */
+
+router.get("/api/get/allpendingorders", (req, res) => {
+  pool.query(
+    `SELECT * FROM orders
+    WHERE oid NOT IN(SELECT oid FROM assigns)`,
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+/*------------------------------------ ASSIGNS ------------------------------------ */
+
+router.get("/api/get/assignedordersbymid", (req, res) => {
+  const mid = req.query.mid;
+  pool.query(
+    `SELECT * FROM assigns
+    WHERE mid = $1`,
+    [mid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.post("/api/post/assigntodb", (req, res) => {
+  const { rid, oid, mid, managerFee, riderFee } = req.body;
+  console.log(req.body);
+  pool.query(
+    `INSERT INTO assigns(riderid, oid, mid, managerFee, riderFee)
+    VALUES($1, $2, $3, $4, $5)
+    RETURNING (mid);`,
+    [rid, oid, mid, managerFee, riderFee],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );

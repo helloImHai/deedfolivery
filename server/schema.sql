@@ -108,8 +108,8 @@ CREATE TABLE Lists (
 );
 
 CREATE TABLE Assigns (
-    mid             INTEGER,
     oid             INTEGER,
+    mid             INTEGER,
     riderid         INTEGER,
     acceptTime      TIMESTAMP,
     reachedTime     TIMESTAMP,
