@@ -20,14 +20,15 @@ export class LoginView extends Component {
       username: this.props.username,
       password: this.props.password
     }).then(res => {
-      console.log(res.statusText);
-      if (!res.statusText == "OK") {
+      console.log(res);
+      if (res.data == "Not added") {
         // TODO CHECK "OK" or NOT
         alert("This username already exists!");
+      } else {
+        alert(
+          `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
+        );
       }
-      alert(
-        `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
-      );
     });
   };
   handleSignIn = () => {

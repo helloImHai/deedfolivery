@@ -33,11 +33,16 @@ router.post("/api/post/customertodb", (req, res, next) => {
   pool.query(
     `INSERT INTO customers(username, password)
               VALUES($1, $2)
-              ON CONFLICT DO NOTHING`,
+              ON CONFLICT(username) DO NOTHING
+              RETURNING (username)`,
     values,
     (q_err, q_res) => {
       //TODO: CHECK IF PERSON ALREADY EXISTS
-      res.json("Successfully added");
+      if (q_res.rows.length == 0) {
+        res.json("Not added");
+      } else {
+        res.json("Successfully added");
+      }
     }
   );
 });
@@ -50,11 +55,16 @@ router.post("/api/post/managertodb", (req, res, next) => {
   pool.query(
     `INSERT INTO managers(username, password)
               VALUES($1, $2)
-              ON CONFLICT DO NOTHING`,
+              ON CONFLICT(username) DO NOTHING
+              RETURNING (username)`,
     values,
     (q_err, q_res) => {
       //TODO: CHECK IF PERSON ALREADY EXISTS
-      res.json("Successfully added");
+      if (q_res.rows.length == 0) {
+        res.json("Not added");
+      } else {
+        res.json("Successfully added");
+      }
     }
   );
 });
@@ -79,11 +89,16 @@ router.post("/api/post/restauranttodb", (req, res, next) => {
   pool.query(
     `INSERT INTO restaurants(username, password)
               VALUES($1, $2)
-              ON CONFLICT DO NOTHING`,
+              ON CONFLICT(username) DO NOTHING
+              RETURNING (username)`,
     values,
     (q_err, q_res) => {
       //TODO: CHECK IF PERSON ALREADY EXISTS
-      res.json("Successfully added");
+      if (q_res.rows.length == 0) {
+        res.json("Not added");
+      } else {
+        res.json("Successfully added");
+      }
     }
   );
 });
@@ -108,11 +123,16 @@ router.post("/api/post/ridertodb", (req, res, next) => {
   pool.query(
     `INSERT INTO riders(username, password)
               VALUES($1, $2)
-              ON CONFLICT DO NOTHING`,
+              ON CONFLICT(username) DO NOTHING
+              RETURNING (username)`,
     values,
     (q_err, q_res) => {
       //TODO: CHECK IF PERSON ALREADY EXISTS
-      res.json("Successfully added");
+      if (q_res.rows.length == 0) {
+        res.json("Not added");
+      } else {
+        res.json("Successfully added");
+      }
     }
   );
 });
