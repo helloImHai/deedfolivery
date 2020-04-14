@@ -6,20 +6,24 @@ import Logout from "./Logout";
 
 export class ManagerView extends Component {
   state = {
-    email: ""
+    email: "",
   };
 
   fetchUserData() {
     API.get("/get/manager", {
-      params: { username: this.props.username }
-    }).then(res => {
-      console.log("data", res.data[0]);
-      this.setState({
-        ...this.state,
-        id: res.data[0].mid,
-        email: res.data[0].email
+      params: { username: this.props.username },
+    })
+      .then((res) => {
+        console.log("data", res.data[0]);
+        this.setState({
+          ...this.state,
+          id: res.data[0].mid,
+          email: res.data[0].email,
+        });
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    });
   }
 
   componentWillMount() {
@@ -59,10 +63,10 @@ class User extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
 const mapDispatchToProps = {};

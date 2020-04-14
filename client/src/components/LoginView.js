@@ -19,30 +19,37 @@ export class LoginView extends Component {
     API.post(`http://localhost:5000/api/post/${this.props.userType}todb`, {
       username: this.props.username,
       password: this.props.password,
-    }).then((res) => {
-      console.log(res);
-      if (res.data.length == 0) {
-        alert("This username already exists!");
-      } else {
-        alert(
-          `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
-        );
-      }
-    });
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.length == 0) {
+          alert("This username already exists!");
+        } else {
+          alert(
+            `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
+          );
+        }
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   handleSignIn = () => {
     API.get(`http://localhost:5000/api/get/${this.props.userType}`, {
-      params: { username: this.props.username }
-    }).then(res => {
-      if (res.data.length == 0) {
-        alert("Invalid username! Please Sign Up!");
-      } else if (res.data[0].password != this.props.password){
-        alert("Invalid password!");
-      } else {
-        this.props.history.push(`/${this.props.userType}`);
-      }
+      params: { username: this.props.username },
     })
-    
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert("Invalid username! Please Sign Up!");
+        } else if (res.data[0].password != this.props.password) {
+          alert("Invalid password!");
+        } else {
+          this.props.history.push(`/${this.props.userType}`);
+        }
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   handleUsernameChange = (event) => {
     this.props.handleUsernameChange(event.target.value);

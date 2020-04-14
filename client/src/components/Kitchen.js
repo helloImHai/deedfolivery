@@ -27,7 +27,7 @@ export default class Kitchen extends Component {
   fetchRestaurantData(nextProps) {
     console.log("fetching restaurant data");
     console.log("selecting where rid is", nextProps.id);
-    API.get("/get/fooditems", {
+    API.get("/get/fooditemsbyrid", {
       params: { rid: nextProps.id },
     }).then((res) => {
       this.setState({ ...this.state, foodItems: res.data });
@@ -81,7 +81,11 @@ export default class Kitchen extends Component {
       <div>
         <h3>Your food items!</h3>
         <br></br>
-        <FoodItem foodItems={this.state.foodItems}></FoodItem>
+        <FoodItem
+          rid={this.props.id}
+          fetchFoodItems={this.fetchFoodItems}
+          foodItems={this.state.foodItems}
+        ></FoodItem>
         <br></br>
         <h3>Add more food items!</h3>
         <Form>
@@ -128,25 +132,40 @@ export default class Kitchen extends Component {
   }
 }
 
-const FoodItem = ({ foodItems }) => (
-  <div>
-    <Table id="students">
-      <tbody>
-        <tr>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Quota</th>
-          <th>Category</th>
-        </tr>
-        {foodItems.map((item) => (
-          <tr key={item.iid}>
-            <td>{item.iname}</td>
-            <td>{item.price}</td>
-            <td>{item.quota}</td>
-            <td>{item.category}</td>
+class FoodItem extends Component {
+  handleDelete = (item) => {
+    console.log("deleting", item);
+    console.log(this.props.rid);
+    API.delete("/delete/fooditembyiid", {
+      data: { iid: item.iid },
+    }).then(() => this.props.fetchFoodItems());
+  };
+  render() {
+    return (
+      <Table id="students">
+        <tbody>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quota</th>
+            <th>Category</th>
+            <th>Delete</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  </div>
-);
+          {this.props.foodItems.map((item) => (
+            <tr key={item.iid}>
+              <td>{item.iname}</td>
+              <td>{item.price}</td>
+              <td>{item.quota}</td>
+              <td>{item.category}</td>
+              <td>
+                <Button onClick={this.handleDelete.bind(this, item)}>
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    );
+  }
+}

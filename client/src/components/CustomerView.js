@@ -10,23 +10,27 @@ export class CustomerView extends Component {
     email: "",
     address: "",
     points: 0,
-    card: 0
+    card: 0,
   };
 
   fetchUserData() {
     API.get("/get/customer", {
-      params: { username: this.props.username }
-    }).then(res => {
-      console.log("data", res.data[0]);
-      this.setState({
-        ...this.state,
-        cname: res.data[0].cname,
-        email: res.data[0].email,
-        address: res.data[0].address,
-        points: res.data[0].points,
-        card: res.data[0].card
+      params: { username: this.props.username },
+    })
+      .then((res) => {
+        console.log("data", res.data[0]);
+        this.setState({
+          ...this.state,
+          cname: res.data[0].cname,
+          email: res.data[0].email,
+          address: res.data[0].address,
+          points: res.data[0].points,
+          card: res.data[0].card,
+        });
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    });
   }
 
   componentWillMount() {
@@ -80,10 +84,10 @@ class User extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
 const mapDispatchToProps = {};
