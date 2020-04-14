@@ -117,10 +117,9 @@ class PendingOrders extends Component {
       });
   }
 
-  handleRiderIdChange = (order) => {
-    this.setState({
-      ...this.state,
-    });
+  handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(event.target.riderid.value);
   };
 
   render() {
@@ -135,8 +134,7 @@ class PendingOrders extends Component {
               <th>Cost</th>
               <th>Reward</th>
               <th>Address</th>
-              <th>Rider Id</th>
-              <th>Assign</th>
+              <th>Assign Rider</th>
             </tr>
             {this.state.pendingOrders.map((order) => (
               <tr key={order.oid}>
@@ -145,15 +143,15 @@ class PendingOrders extends Component {
                 <td>{order.reward}</td>
                 <td>{order.address}</td>
                 <td>
-                  <Form>
+                  <Form onSubmit={this.handleSubmit}>
                     <Form.Row>
                       <Form.Control
-                        style={{ width: 100 }}
+                        name="riderid"
+                        style={{ width: 100, marginRight: 10 }}
                         placeholder={0}
                         type="number"
-                        onChange={this.handleRiderIdChange.bind(this, order)}
                       />
-                      <Button>Assign</Button>
+                      <Button type="submit">Assign</Button>
                     </Form.Row>
                   </Form>
                 </td>

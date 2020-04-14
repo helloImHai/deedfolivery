@@ -4,13 +4,11 @@ DROP TABLE IF EXISTS Customers CASCADE;
 DROP TABLE IF EXISTS Restaurants CASCADE;
 DROP TABLE IF EXISTS Riders CASCADE;
 DROP TABLE IF EXISTS Managers CASCADE;
-DROP TABLE IF EXISTS Items CASCADE;
 DROP TABLE IF EXISTS Sells CASCADE;
 DROP TABLE IF EXISTS Reviews CASCADE;
 DROP TABLE IF EXISTS Orders CASCADE;
 DROP TABLE IF EXISTS Places CASCADE;
 DROP TABLE IF EXISTS Lists CASCADE;
-DROP TABLE IF EXISTS Employs CASCADE;
 DROP TABLE IF EXISTS Assigns CASCADE;
 DROP TABLE IF EXISTS Promotions CASCADE;
 DROP TABLE IF EXISTS ROffers CASCADE;
@@ -18,18 +16,15 @@ DROP TABLE IF EXISTS MOffers CASCADE;
 DROP TABLE IF EXISTS Claims CASCADE;
 DROP TABLE IF EXISTS FullTimers CASCADE;
 DROP TABLE IF EXISTS PartTimers CASCADE;
-DROP TABLE IF EXISTS MWS CASCADE;
-DROP TABLE IF EXISTS WWS CASCADE;
-DROP TABLE IF EXISTS Shifts CASCADE;
-DROP TABLE IF EXISTS MonthConsists CASCADE;
-DROP TABLE IF EXISTS WeekContains CASCADE;
-DROP TABLE IF EXISTS FMaintains CASCADE;
-DROP TABLE IF EXISTS PMaintains CASCADE;
+DROP TABLE IF EXISTS FWorks CASCADE;
+DROP TABLE IF EXISTS PWorks CASCADE;
+DROP TABLE IF EXISTS Weeks CASCADE;
+DROP TABLE IF EXISTS Intervals CASCADE;
 
 CREATE TABLE Customers (
     cid             SERIAL PRIMARY KEY,
     cname           VARCHAR(50),
-    username        VARCHAR(10) UNIQUE,
+    username        VARCHAR(50) UNIQUE,
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
@@ -40,16 +35,16 @@ CREATE TABLE Customers (
 CREATE TABLE Restaurants (
     rid             SERIAL PRIMARY KEY,
     rname           VARCHAR(50),
-    username        VARCHAR(10) UNIQUE,
+    username        VARCHAR(50) UNIQUE,
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
-    minspend        INTEGER
+    minSpend        INTEGER
 );
 
 CREATE TABLE Riders (
     riderid         SERIAL PRIMARY KEY,
-    username        VARCHAR(10) UNIQUE,
+    username        VARCHAR(50) UNIQUE,
     email           VARCHAR(50),
     password        VARCHAR(16),
     delivered       INTEGER
@@ -57,26 +52,24 @@ CREATE TABLE Riders (
 
 CREATE TABLE Managers (
 	mid 			SERIAL PRIMARY KEY,
-    username        VARCHAR(10) UNIQUE,
+    username        VARCHAR(50) UNIQUE,
     email           VARCHAR(50),
     password        VARCHAR(16)
 );
 
 CREATE TABLE Sells (
     rid             INTEGER,
-    iid             SERIAL,
-    FOREIGN KEY (rid) REFERENCES Restaurants,
-    iname           VARCHAR(10),
+    item            VARCHAR(50),
     price           FLOAT,
-    stock           INTEGER,
-    quota           INTEGER,
-    category        VARCHAR(10),
-    PRIMARY KEY (iid, rid)
+    quantity        INTEGER,
+    category        VARCHAR(50),
+    PRIMARY KEY (rid, item),
+    FOREIGN KEY (rid) REFERENCES Restaurants ON DELETE CASCADE
 );
 
 CREATE TABLE Orders (
     oid             SERIAL PRIMARY KEY,
-    paytype         VARCHAR(5),
+    payType         VARCHAR(5),
     card            INTEGER,
     cost            FLOAT,
     reward          INTEGER,
@@ -84,9 +77,13 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE Reviews (
-    reviewid        INTEGER,
-    foodReview      VARCHAR(250),
-    deliveryRating  INTEGER
+    cid             INTEGER,
+    oid             INTEGER,
+    review          VARCHAR(250),
+    rating          INTEGER,
+    PRIMARY KEY (cid, oid),
+    FOREIGN KEY (cid) REFERENCES Customers ON DELETE CASCADE,
+    FOREIGN KEY (oid) REFERENCES Orders ON DELETE CASCADE
 );
 
 CREATE TABLE Places (
@@ -101,34 +98,26 @@ CREATE TABLE Places (
 CREATE TABLE Lists (
     oid             INTEGER,
     rid             INTEGER,
-    iid             INTEGER,
-    PRIMARY KEY (oid, rid, iid),
+    item            VARCHAR(50),
+    PRIMARY KEY (oid, rid, item),
     FOREIGN KEY (oid) REFERENCES Orders,
-    FOREIGN KEY (rid) REFERENCES Restaurants,
-    FOREIGN KEY (iid) REFERENCES Sells
-);
-
-CREATE TABLE Employs (
-    mid             INTEGER,
-    riderid         INTEGER,
-    fee             FLOAT,
-    PRIMARY KEY (mid, riderid),
-    FOREIGN KEY (mid) REFERENCES Managers,
-    FOREIGN KEY (riderid) REFERENCES Riders
+    FOREIGN KEY (rid, item) REFERENCES Sells
 );
 
 CREATE TABLE Assigns (
     oid             INTEGER,
     mid             INTEGER,
+    oid             INTEGER,
     riderid         INTEGER,
     acceptTime      VARCHAR(50),
     reacheTime      VARCHAR(50),
     leaveTime       VARCHAR(50),
     deliveryTime    VARCHAR(50),
-    fee             FLOAT,
-    PRIMARY KEY (mid, riderid, oid),
-    FOREIGN KEY (oid) REFERENCES Orders,
+    managerFee      FLOAT,
+    riderFee        FLOAT,
+    PRIMARY KEY (mid, oid, riderid),
     FOREIGN KEY (mid) REFERENCES Managers,
+    FOREIGN KEY (oid) REFERENCES Orders,
     FOREIGN KEY (riderid) REFERENCES Riders
 );
 
@@ -136,8 +125,8 @@ CREATE TABLE Promotions (
     pid             INTEGER,
     category        VARCHAR(20),
     value           FLOAT,
-    start           VARCHAR(50),
-    expire             VARCHAR(50),
+    startDate       VARCHAR(50),
+    endDate         VARCHAR(50),
     PRIMARY KEY (pid)
 );
 
@@ -165,65 +154,51 @@ CREATE TABLE Claims (
 
 CREATE TABLE FullTimers (
     riderid         INTEGER,
-    mSalary         INTEGER,
+    monthSalary     INTEGER,
     PRIMARY KEY (riderid),
     FOREIGN KEY (riderid) REFERENCES Riders
+);
+
+CREATE TABLE Weeks (
+    wid             INTEGER,
+    daysOption      INTEGER, --must belong to 1 of 7 options: Monday to Friday, Tuesday to Saturday, Wednesday to Sunday, Thursday to Monday, Friday to Tuesday, Saturday to Wednesday, or Sunday to Thursday.
+    day1shift       INTEGER,
+    day2shift       INTEGER,
+    day3shift       INTEGER,
+    day4shift       INTEGER,
+    day5shift       INTEGER,
+    weekHours       INTEGER,
+    PRIMARY KEY (wid)
+);
+
+CREATE TABLE FWorks (
+    riderid         INTEGER,
+    wid             INTEGER,
+    PRIMARY KEY (riderid),
+    FOREIGN KEY (riderid) REFERENCES Riders,
+    FOREIGN KEY (wid) REFERENCES Weeks
 );
 
 CREATE TABLE PartTimers (
     riderid         INTEGER,
-    wSalary         INTEGER,
+    weekSalary      INTEGER,
+    weekHours       INTEGER,
     PRIMARY KEY (riderid),
     FOREIGN KEY (riderid) REFERENCES Riders
 );
 
-CREATE TABLE MWS (
-    mwsid           INTEGER,
-    PRIMARY KEY (mwsid)
-);
-
-CREATE TABLE WWS (
-    wwsid           INTEGER,
-    PRIMARY KEY (wwsid)
-);
-
-CREATE TABLE FMaintains (
-    riderid         INTEGER,
-    mwsid           INTEGER,
-    PRIMARY KEY (riderid, mwsid),
-    FOREIGN KEY (riderid) REFERENCES FullTimers,
-    FOREIGN KEY (mwsid) REFERENCES MWS
-);
-
-CREATE TABLE PMaintains (
-    riderid         INTEGER,
-    wwsid           INTEGER,
-    totalHour       INTEGER,
-    PRIMARY KEY (riderid, wwsid),
-    FOREIGN KEY (riderid) REFERENCES PartTimers,
-    FOREIGN KEY (wwsid) REFERENCES WWS
-);
-
-CREATE TABLE MonthConsists (
-    mwsid           INTEGER,
-    wwsid           INTEGER,
-    PRIMARY KEY (mwsid, wwsid),
-    FOREIGN KEY (mwsid) REFERENCES MWS,
-    FOREIGN KEY (wwsid) REFERENCES WWS
-);
-
-CREATE TABLE Shifts (
-    sid             INTEGER,
-    day             VARCHAR(10),
+CREATE TABLE Intervals (
+    intervalid      INTEGER,
+    day             VARCHAR(50),
     startTime       INTEGER,
     endTime         INTEGER,
-    PRIMARY KEY (sid)
+    PRIMARY KEY (intervalid)
 );
 
-CREATE TABLE WeekContains (
-    wwsid           INTEGER,
-    sid             INTEGER,
-    PRIMARY KEY (wwsid, sid),
-    FOREIGN KEY (wwsid) REFERENCES WWS,
-    FOREIGN KEY (sid) REFERENCES Shifts
+CREATE TABLE PWorks (
+    riderid         INTEGER,
+    intervalid      INTEGER,
+    PRIMARY KEY (riderid, intervalid),
+    FOREIGN KEY (riderid) REFERENCES PartTimers,
+    FOREIGN KEY (intervalid) REFERENCES Intervals
 );
