@@ -10,19 +10,17 @@ router.get("/api/hello", (req, res) => {
 
 router.get("/api/get/allcustomers", (req, res) => {
   pool.query(`SELECT * FROM customers`, (q_err, q_res) => {
-    // console.log(q_res);
     res.json(q_res.rows);
   });
 });
 
 router.get("/api/get/customer", (req, res) => {
   const username = req.query.username;
-  console.log(req.query.username);
   pool.query(
     `SELECT * FROM customers WHERE username = $1`,
     [username],
     (q_err, q_res) => {
-      // console.log(q_res);
+      console.log(q_res.rows);
       res.json(q_res.rows);
     }
   );
@@ -38,12 +36,7 @@ router.post("/api/post/customertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
-      //TODO: CHECK IF PERSON ALREADY EXISTS
-      if (q_res.rows.length == 0) {
-        res.json("Not added");
-      } else {
-        res.json("Successfully added");
-      }
+      res.json(q_res.rows);
     }
   );
 });
@@ -60,12 +53,7 @@ router.post("/api/post/managertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
-      //TODO: CHECK IF PERSON ALREADY EXISTS
-      if (q_res.rows.length == 0) {
-        res.json("Not added");
-      } else {
-        res.json("Successfully added");
-      }
+      res.json(q_res.rows);
     }
   );
 });
@@ -76,7 +64,6 @@ router.get("/api/get/manager", (req, res) => {
     `SELECT * FROM managers WHERE username = $1`,
     [username],
     (q_err, q_res) => {
-      // console.log(q_res);
       res.json(q_res.rows);
     }
   );
@@ -94,12 +81,7 @@ router.post("/api/post/restauranttodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
-      //TODO: CHECK IF PERSON ALREADY EXISTS
-      if (q_res.rows.length == 0) {
-        res.json("Not added");
-      } else {
-        res.json("Successfully added");
-      }
+      res.json(q_res.rows);
     }
   );
 });
@@ -110,7 +92,6 @@ router.get("/api/get/restaurant", (req, res) => {
     `SELECT * FROM restaurants WHERE username = $1`,
     [username],
     (q_err, q_res) => {
-      // console.log(q_res);
       res.json(q_res.rows);
     }
   );
@@ -138,12 +119,7 @@ router.post("/api/post/ridertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
-      //TODO: CHECK IF PERSON ALREADY EXISTS
-      if (q_res.rows.length == 0) {
-        res.json("Not added");
-      } else {
-        res.json("Successfully added");
-      }
+      res.json(q_res.rows);
     }
   );
 });
@@ -154,7 +130,6 @@ router.get("/api/get/rider", (req, res) => {
     `SELECT * FROM riders WHERE username = $1`,
     [username],
     (q_err, q_res) => {
-      // console.log(q_res);
       res.json(q_res.rows);
     }
   );

@@ -21,8 +21,7 @@ export class LoginView extends Component {
       password: this.props.password
     }).then(res => {
       console.log(res);
-      if (res.data == "Not added") {
-        // TODO CHECK "OK" or NOT
+      if (res.data.length == 0) {
         alert("This username already exists!");
       } else {
         alert(
@@ -32,7 +31,18 @@ export class LoginView extends Component {
     });
   };
   handleSignIn = () => {
-    this.props.history.push(`/${this.props.userType}`);
+    API.get(`http://localhost:5000/api/get/${this.props.userType}`, {
+      params: { username: this.props.username }
+    }).then(res => {
+      if (res.data.length == 0) {
+        alert("Invalid username! Please Sign Up!");
+      } else if (res.data[0].password != this.props.password){
+        alert("Invalid password!");
+      } else {
+        this.props.history.push(`/${this.props.userType}`);
+      }
+    })
+    
   };
   handleUsernameChange = event => {
     this.props.handleUsernameChange(event.target.value);
@@ -47,9 +57,6 @@ export class LoginView extends Component {
   render() {
     return (
       <Container className="container-sm" style={{ marginTop: "50px" }}>
-        <br />
-        <h1>Deed Folivery</h1>
-        <br />
         <ToggleButtonGroup
           type="radio"
           name="options"
