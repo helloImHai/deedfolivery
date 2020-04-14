@@ -5,21 +5,21 @@ import {
   Container,
   Form,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
 } from "react-bootstrap";
 import API from "../api";
 import {
   updateUsername,
   updatePassword,
-  updateUserType
+  updateUserType,
 } from "../actions/userActions";
 
 export class LoginView extends Component {
   handleSignUp = () => {
     API.post(`http://localhost:5000/api/post/${this.props.userType}todb`, {
       username: this.props.username,
-      password: this.props.password
-    }).then(res => {
+      password: this.props.password,
+    }).then((res) => {
       console.log(res);
       if (res.data.length == 0) {
         alert("This username already exists!");
@@ -44,13 +44,13 @@ export class LoginView extends Component {
     })
     
   };
-  handleUsernameChange = event => {
+  handleUsernameChange = (event) => {
     this.props.handleUsernameChange(event.target.value);
   };
-  handlePasswordChange = event => {
+  handlePasswordChange = (event) => {
     this.props.handlePasswordChange(event.target.value);
   };
-  handleTypeChange = event => {
+  handleTypeChange = (event) => {
     this.props.handleTypeChange(event);
     console.log(this.props.userType);
   };
@@ -115,23 +115,23 @@ export class LoginView extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    handleUsernameChange: username => {
+    handleUsernameChange: (username) => {
       dispatch(updateUsername(username));
     },
-    handlePasswordChange: password => {
+    handlePasswordChange: (password) => {
       dispatch(updatePassword(password));
     },
-    handleTypeChange: type => {
+    handleTypeChange: (type) => {
       dispatch(updateUserType(type));
-    }
+    },
   };
 };
 
