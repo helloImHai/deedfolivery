@@ -106,6 +106,11 @@ router.post("/api/post/restauranttodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );
