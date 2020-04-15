@@ -135,16 +135,16 @@ CREATE TABLE Promotions (
 
 CREATE TABLE ROffers (
     pid             INTEGER,
-    rid             INTEGER,
-    PRIMARY KEY (pid, rid),
+    rid             INTEGER NOT NULL,
+    PRIMARY KEY (pid),
     FOREIGN KEY (pid) REFERENCES Promotions,
     FOREIGN KEY (rid) REFERENCES Restaurants
 );
 
 CREATE TABLE MOffers (
     pid             INTEGER,
-    mid             INTEGER,
-    PRIMARY KEY (pid, mid),
+    mid             INTEGER NOT NULL,
+    PRIMARY KEY (pid),
     FOREIGN KEY (pid) REFERENCES Promotions,
     FOREIGN KEY (mid) REFERENCES Managers
 );
