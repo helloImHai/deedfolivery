@@ -150,7 +150,7 @@ class RidersList extends Component {
   render() {
     return (
       <div>
-        <h2>Riders</h2>
+        <h2>Available Riders</h2>
         <br />
         <Table id="availableriders">
           <tbody>

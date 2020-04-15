@@ -266,7 +266,7 @@ class PendingAssignments extends Component {
                           value={assign.oid}
                           readOnly
                         />
-                        <Button type="submit">Assign</Button>
+                        <Button type="submit">Done</Button>
                       </Form.Row>
                     </Form>
                   ) : (
@@ -283,7 +283,7 @@ class PendingAssignments extends Component {
                           value={assign.oid}
                           readOnly
                         />
-                        <Button type="submit">Assign</Button>
+                        <Button type="submit">Done</Button>
                       </Form.Row>
                     </Form>
                   ) : (
@@ -300,7 +300,7 @@ class PendingAssignments extends Component {
                           value={assign.oid}
                           readOnly
                         />
-                        <Button type="submit">Assign</Button>
+                        <Button type="submit">Done</Button>
                       </Form.Row>
                     </Form>
                   ) : (
@@ -317,7 +317,7 @@ class PendingAssignments extends Component {
                           value={assign.oid}
                           readOnly
                         />
-                        <Button type="submit">Assign</Button>
+                        <Button type="submit">Done</Button>
                       </Form.Row>
                     </Form>
                   ) : (

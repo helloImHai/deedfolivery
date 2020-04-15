@@ -277,9 +277,9 @@ router.put("/api/put/updatedelivered", (req, res) => {
   const { riderid } = req.body;
   pool.query(
     `UPDATE riders SET 
-    delivered = (select count(*) from assigns where riderid = $1 and deliverytime IS NOT NULL)
-    where riderid = $1
-    returning ridername;`,
+    delivered = (SELECT count(*) FROM assigns WHERE riderid = $1 AND deliverytime IS NOT NULL)
+    WHERE riderid = $1
+    RETURNING ridername;`,
     [riderid],
     (q_err, q_res) => {
       if (q_err) {
