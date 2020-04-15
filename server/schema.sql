@@ -117,7 +117,7 @@ CREATE TABLE Assigns (
     deliveryTime    TIMESTAMP,
     managerFee      FLOAT,
     riderFee        FLOAT,
-    PRIMARY KEY (mid, oid, riderid),
+    PRIMARY KEY (oid),
     FOREIGN KEY (mid) REFERENCES Managers,
     FOREIGN KEY (oid) REFERENCES Orders,
     FOREIGN KEY (riderid) REFERENCES Riders
@@ -291,10 +291,10 @@ INSERT INTO Reviews VALUES
 
 INSERT INTO Assigns VALUES 
     (1, 1, 1, null, null, null, null, 2, 1),
-    (1, 2, 4, null, null, null, null, 2, 1),
-    (1, 3, 2, null, null, null, null, 2, 1),
-    (1, 4, 1, null, null, null, null, 2, 1),
-    (1, 5, 3, null, null, null, null, 2, 1);
+    (2, 2, 4, null, null, null, null, 2, 1),
+    (3, 3, 1, null, null, null, null, 2, 1),
+    (4, 1, 1, null, null, null, null, 2, 1),
+    (5, 5, 1, null, null, null, null, 2, 1);
 
 INSERT INTO Promotions VALUES
     (1, 'abc', 2, '2020-04-15', '2020-12-15'),

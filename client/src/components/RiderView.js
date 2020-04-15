@@ -97,7 +97,6 @@ class PendingAssignments extends Component {
       accepttime: Date.now(),
       orderid: orderid,
     }).then(() => this.fetchDeliveries(this.state.riderid));
-    // console.log(moment(Date.now()).unix().format());
   };
   submitReachedTime = () => {
     event.preventDefault();
@@ -106,7 +105,6 @@ class PendingAssignments extends Component {
       reachedtime: Date.now(),
       orderid: orderid,
     }).then(() => this.fetchDeliveries(this.state.riderid));
-    // console.log(moment(Date.now()).unix().format());
   };
   submitLeaveTime = () => {
     event.preventDefault();
@@ -115,7 +113,6 @@ class PendingAssignments extends Component {
       leavetime: Date.now(),
       orderid: orderid,
     }).then(() => this.fetchDeliveries(this.state.riderid));
-    // console.log(moment(Date.now()).unix().format());
   };
   submitDeliveryTime = () => {
     event.preventDefault();
@@ -124,7 +121,6 @@ class PendingAssignments extends Component {
       deliverytime: Date.now(),
       orderid: orderid,
     }).then(() => this.fetchDeliveries(this.state.riderid));
-    // console.log(moment(Date.now()).unix().format());
   };
 
   render() {
