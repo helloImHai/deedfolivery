@@ -80,20 +80,20 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE Reviews (
-    cid             INTEGER,
-    oid             INTEGER UNIQUE,
+    cid             INTEGER NOT NULL, 
+    oid             INTEGER,
     review          VARCHAR(250),
     rating          INTEGER check (rating in (1,2,3,4,5)),
-    PRIMARY KEY (cid, oid),
+    PRIMARY KEY (oid),
     FOREIGN KEY (cid) REFERENCES Customers ON DELETE CASCADE,
     FOREIGN KEY (oid) REFERENCES Orders ON DELETE CASCADE
 );
 
 CREATE TABLE Places (
-    cid             INTEGER,
-    oid             INTEGER UNIQUE,
+    cid             INTEGER NOT NULL,
+    oid             INTEGER,
     ordertime       TIMESTAMP,
-    PRIMARY KEY (cid, oid),
+    PRIMARY KEY (oid),
     FOREIGN KEY (cid) REFERENCES Customers,
     FOREIGN KEY (oid) REFERENCES Orders
 );
