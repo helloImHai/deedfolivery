@@ -49,6 +49,36 @@ router.post("/api/post/customertodb", (req, res, next) => {
   );
 });
 
+router.post("/api/post/custupdatetodb", (req, res, next) => {
+  console.log("Posted");
+  const values = [
+    req.body.cid,
+    req.body.custname,
+    req.body.address,
+    req.body.email,
+    req.body.card,
+  ];
+  console.log(values);
+  pool.query(
+    `UPDATE customers SET "cname" = $2, "address" = $3, "email" = $4, "card" = $5
+              WHERE "cid" = $1`,
+    values,
+    (q_err, q_res) => {
+      if (q_err) {
+        console.log(q_err);
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      if (q_res.rows.length == 0) {
+        res.json("Not updated");
+      } else {
+        res.json("Successfully updated");
+      }
+    }
+  );
+});
+
 /*------------------------------------ MANAGER ------------------------------------ */
 
 router.post("/api/post/managertodb", (req, res, next) => {
@@ -415,4 +445,24 @@ router.put("/api/put/deliverytime", (req, res) => {
   );
 });
 
+/*------------------------------------ Menu ------------------------------------ */
+router.get("/api/get/restaurantName", (req, res) => {
+  pool.query(
+    `SELECT rname FROM restaurants`,
+    (q_err, q_res) => {
+      console.log(q_res);
+      res.json(q_res.rows);
+    }
+  );
+});
+
 module.exports = router;
+
+/*------------------------------------ Places ------------------------------------ */
+router.get("/api/get/placeitembycid", (req, res) => {
+  const cid = req.query.caseid;
+  pool.query(`SELECT * FROM places WHERE cid = $1`, [cid], (q_err, q_res) => {
+    // console.log(q_res);
+    res.json(q_res.rows);
+  });
+});
