@@ -1,4 +1,4 @@
--- Create base and solution tables. Load data into solution tables.
+---------------------- CREATE TABLES ----------------------------------------------------------------------------
 
 DROP TABLE IF EXISTS Customers CASCADE;
 DROP TABLE IF EXISTS Restaurants CASCADE;
@@ -28,7 +28,7 @@ CREATE TABLE Customers (
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
-    points          INTEGER,
+    points          INTEGER check (points >= 0),
     card            INTEGER
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE Restaurants (
     email           VARCHAR(50),
     password        VARCHAR(16),
     address         VARCHAR(80),
-    minSpend        INTEGER
+    minSpend        INTEGER check (minSpend >= 0)
 );
 
 CREATE TABLE Riders (
@@ -48,7 +48,7 @@ CREATE TABLE Riders (
     username        VARCHAR(50) UNIQUE NOT NULL,
     email           VARCHAR(50),
     password        VARCHAR(16),
-    delivered       INTEGER
+    delivered       INTEGER check (delivered >= 0)
 );
 
 CREATE TABLE Managers (
@@ -63,8 +63,8 @@ CREATE TABLE Sells (
     iid             SERIAL PRIMARY KEY,
     rid             INTEGER NOT NULL,
     item            VARCHAR(50) NOT NULL,
-    price           FLOAT,
-    quantity        INTEGER,
+    price           FLOAT check (price > 0),
+    quantity        INTEGER check (quantity > 0),
     category        VARCHAR(50),
     UNIQUE (rid, item),
     FOREIGN KEY (rid) REFERENCES Restaurants ON DELETE CASCADE
@@ -72,9 +72,9 @@ CREATE TABLE Sells (
 
 CREATE TABLE Orders (
     oid             SERIAL PRIMARY KEY,
-    payType         VARCHAR(5),
+    payType         VARCHAR(5) check (payType IN ('cash', 'card')),
     card            INTEGER,
-    cost            FLOAT,
+    cost            FLOAT check (cost > 0),
     reward          INTEGER,
     address         VARCHAR(80)
 );
@@ -83,7 +83,7 @@ CREATE TABLE Reviews (
     cid             INTEGER,
     oid             INTEGER UNIQUE,
     review          VARCHAR(250),
-    rating          INTEGER,
+    rating          INTEGER check (rating in (1,2,3,4,5)),
     PRIMARY KEY (cid, oid),
     FOREIGN KEY (cid) REFERENCES Customers ON DELETE CASCADE,
     FOREIGN KEY (oid) REFERENCES Orders ON DELETE CASCADE
@@ -101,7 +101,7 @@ CREATE TABLE Places (
 CREATE TABLE Lists (
     oid             INTEGER,
     iid             INTEGER,
-    quantity        INTEGER,
+    quantity        INTEGER check (quantity > 0),
     PRIMARY KEY (oid, iid),
     FOREIGN KEY (oid) REFERENCES Orders ON DELETE CASCADE,
     FOREIGN KEY (iid) REFERENCES Sells ON DELETE CASCADE
@@ -126,7 +126,7 @@ CREATE TABLE Assigns (
 CREATE TABLE Promotions (
     pid             INTEGER,
     category        VARCHAR(20),
-    value           FLOAT,
+    value           FLOAT check (value > 0),
     startDate       DATE,
     endDate         DATE,
     PRIMARY KEY (pid),
@@ -157,7 +157,7 @@ CREATE TABLE Claims (
 
 CREATE TABLE FullTimers (
     riderid         INTEGER,
-    monthSalary     INTEGER,
+    monthSalary     INTEGER check (monthSalary >= 0),
     PRIMARY KEY (riderid),
     FOREIGN KEY (riderid) REFERENCES Riders
 );
@@ -189,8 +189,8 @@ CREATE TABLE FWorks (
 
 CREATE TABLE PartTimers (
     riderid         INTEGER,
-    weekSalary      INTEGER,
-    weekHours       INTEGER,
+    weekSalary      INTEGER check (weekSalary >= 0),
+    weekHours       INTEGER check (weekHours >= 0),
     PRIMARY KEY (riderid),
     FOREIGN KEY (riderid) REFERENCES Riders
 );
@@ -213,7 +213,141 @@ CREATE TABLE PWorks (
     FOREIGN KEY (intervalid) REFERENCES Intervals
 );
 
----------------------- POPULATE DATA ------------------------------------------------------------------------
+---------------------- CREATE TRIGGERS ---------------------------------------------------------------------------
+
+-- check if there are spaces in username and password
+CREATE OR REPLACE FUNCTION check_spaces() RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.username LIKE '% %' OR NEW.password LIKE '% %') THEN
+    RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_spaces_trigger ON Customers;
+CREATE TRIGGER check_spaces_trigger
+    BEFORE UPDATE OF username, password OR INSERT ON Customers
+    FOR EACH ROW
+    EXECUTE FUNCTION check_spaces();
+
+DROP TRIGGER IF EXISTS check_spaces_trigger ON Restaurants;
+CREATE TRIGGER check_spaces_trigger
+    BEFORE UPDATE OF username, password OR INSERT ON Restaurants
+    FOR EACH ROW
+    EXECUTE FUNCTION check_spaces();
+
+DROP TRIGGER IF EXISTS check_spaces_trigger ON Riders;
+CREATE TRIGGER check_spaces_trigger
+    BEFORE UPDATE OF username, password OR INSERT ON Riders
+    FOR EACH ROW
+    EXECUTE FUNCTION check_spaces();
+
+DROP TRIGGER IF EXISTS check_spaces_trigger ON Managers;
+CREATE TRIGGER check_spaces_trigger
+    BEFORE UPDATE of username, password OR INSERT ON Managers
+    FOR EACH ROW
+    EXECUTE FUNCTION check_spaces();
+
+-- check if all items from an order are from the same restaurants
+CREATE OR REPLACE FUNCTION check_same_restaurant() RETURNS TRIGGER AS $$
+BEGIN
+    IF ((SELECT DISTINCT rid FROM Lists L, Sells S WHERE L.oid = NEW.oid AND L.iid = S.iid)
+        != (SELECT DISTINCT rid FROM Sells WHERE iid = NEW.iid))
+    THEN RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_same_restaurant_trigger ON Lists;
+CREATE TRIGGER check_same_restaurant_trigger
+    BEFORE UPDATE OF oid, iid OR INSERT ON Lists
+    FOR EACH ROW
+    EXECUTE FUNCTION check_same_restaurant();
+
+-- check if item quantity exceeds restaurants' available stock
+CREATE OR REPLACE FUNCTION check_stock() RETURNS TRIGGER AS $$
+BEGIN
+    IF ((SELECT quantity FROM Sells WHERE iid = NEW.iid) < NEW.quantity) THEN RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_stock_trigger ON Lists;
+CREATE TRIGGER check_stock_trigger
+    BEFORE UPDATE OF quantity OR INSERT ON Lists
+    FOR EACH ROW
+    EXECUTE FUNCTION check_stock();
+
+-- if same item added to an order, increase quantity instead of adding new entry
+CREATE OR REPLACE FUNCTION check_same_item() RETURNS TRIGGER AS $$
+BEGIN
+    IF ((NEW.oid, NEW.iid) IN (SELECT oid, iid FROM Lists))
+    THEN UPDATE Lists
+    SET quantity = quantity + NEW.quantity
+    WHERE oid = NEW.oid AND iid = NEW.iid;
+    RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_same_item_trigger ON Lists;
+CREATE TRIGGER check_same_item_trigger
+    BEFORE UPDATE OF oid, iid OR INSERT ON Lists
+    FOR EACH ROW
+    EXECUTE FUNCTION check_same_item();
+
+-- check if order cost is more than minimum spending by restaurant
+CREATE OR REPLACE FUNCTION check_minspend() RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.cost < (SELECT DISTINCT minspend
+                    FROM Lists L, Sells S, Restaurants R
+                    WHERE L.oid = New.oid AND L.iid = S.iid AND S.rid = R.rid))
+    THEN RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_minspend_trigger ON Orders;
+CREATE TRIGGER check_minspend_trigger
+    BEFORE UPDATE OF oid, cost OR INSERT ON Orders
+    FOR EACH ROW
+    EXECUTE FUNCTION check_minspend();
+
+-- check rider timing constraints
+-- rider must accept order before could reach restaurant
+-- rider must reach restaurant before could leave restaurant
+-- rider must leave restaurant before could deliver order
+CREATE OR REPLACE FUNCTION check_rider_time() RETURNS TRIGGER AS $$
+BEGIN
+    IF ((NEW.acceptTime IS NULL AND NEW.reachedTime IS NOT NULL)
+        OR (NEW.acceptTime > NEW.reachedTime))
+        THEN RETURN NULL;
+    END IF;
+    IF ((NEW.reachedTime IS NULL AND NEW.leaveTime IS NOT NULL)
+        OR (NEW.reachedTime > NEW.leaveTime))
+        THEN RETURN NULL;
+    END IF;
+    IF ((NEW.leaveTime IS NULL AND NEW.deliveryTime IS NOT NULL)
+        OR (NEW.leaveTime > NEW.deliveryTime))
+        THEN RETURN NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_rider_time_trigger ON Assigns;
+CREATE TRIGGER check_rider_time_trigger
+    BEFORE UPDATE OF acceptTime, reachedTime, leaveTime, deliveryTime OR INSERT ON Assigns
+    FOR EACH ROW
+    EXECUTE FUNCTION check_rider_time();
+
+
+---------------------- POPULATE WITH DATA ------------------------------------------------------------------------
 
 INSERT INTO Customers VALUES
     (1, 'Duong', 'duong', 'duong@gmail.com', 'duongpass', '51 PHT', 0, 1234),
