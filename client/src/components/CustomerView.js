@@ -40,7 +40,7 @@ export class CustomerView extends Component {
         <h1>Customer</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
-        <br />
+        <Button variant="primary" href="/menuview" > <a >Order Food</a></Button>
         <Logout history={this.props.history}></Logout>
       </Container>
     );

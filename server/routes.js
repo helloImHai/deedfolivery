@@ -149,4 +149,15 @@ router.get("/api/get/rider", (req, res) => {
   );
 });
 
+/*------------------------------------ Menu ------------------------------------ */
+router.get("/api/get/restaurantName", (req, res) => {
+  pool.query(
+    `SELECT rname FROM restaurants`,
+    (q_err, q_res) => {
+      console.log(q_res);
+      res.json(q_res.rows);
+    }
+  );
+});
+
 module.exports = router;
