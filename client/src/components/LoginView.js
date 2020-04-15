@@ -5,48 +5,67 @@ import {
   Container,
   Form,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
 } from "react-bootstrap";
 import API from "../api";
 import {
   updateUsername,
   updatePassword,
-  updateUserType
+  updateUserType,
 } from "../actions/userActions";
 
 export class LoginView extends Component {
   handleSignUp = () => {
     API.post(`http://localhost:5000/api/post/${this.props.userType}todb`, {
       username: this.props.username,
-      password: this.props.password
-    }).then(res => {
-      console.log(res);
-      if (res.data == "Not added") {
-        // TODO CHECK "OK" or NOT
-        alert("This username already exists!");
-      } else {
-        alert(
-          `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
-        );
-      }
-    });
+      password: this.props.password,
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.length == 0) {
+          alert("This username already exists!");
+        } else {
+          alert(
+            `Success!\n Username: ${this.props.username}\n Password: ${this.props.password}`
+          );
+        }
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   handleSignIn = () => {
-    this.props.history.push(`/${this.props.userType}`);
+    API.get(`http://localhost:5000/api/get/${this.props.userType}`, {
+      params: { username: this.props.username },
+    })
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert("Invalid username! Please Sign Up!");
+        } else if (res.data[0].password != this.props.password) {
+          alert("Invalid password!");
+        } else {
+          this.props.history.push(`/${this.props.userType}`);
+        }
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
-  handleUsernameChange = event => {
+  handleUsernameChange = (event) => {
     this.props.handleUsernameChange(event.target.value);
   };
-  handlePasswordChange = event => {
+  handlePasswordChange = (event) => {
     this.props.handlePasswordChange(event.target.value);
   };
-  handleTypeChange = event => {
+  handleTypeChange = (event) => {
     this.props.handleTypeChange(event);
     console.log(this.props.userType);
   };
   render() {
     return (
       <Container className="container-sm" style={{ marginTop: "50px" }}>
+        <h1>Deed Folivery</h1>
+        <br />
         <ToggleButtonGroup
           type="radio"
           name="options"
@@ -105,23 +124,23 @@ export class LoginView extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   username: state.user.username,
   password: state.user.password,
-  userType: state.user.userType
+  userType: state.user.userType,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    handleUsernameChange: username => {
+    handleUsernameChange: (username) => {
       dispatch(updateUsername(username));
     },
-    handlePasswordChange: password => {
+    handlePasswordChange: (password) => {
       dispatch(updatePassword(password));
     },
-    handleTypeChange: type => {
+    handleTypeChange: (type) => {
       dispatch(updateUserType(type));
-    }
+    },
   };
 };
 
