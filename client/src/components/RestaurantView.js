@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Container, Jumbotron, ListGroup } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Jumbotron,
+  ListGroup,
+  Form,
+  Row,
+  Col,
+} from "react-bootstrap";
 import API from "../api";
 import Logout from "./Logout";
 import Kitchen from "./Kitchen";
@@ -40,6 +48,38 @@ export class RestaurantView extends Component {
     this.fetchUserData();
   }
 
+  handleSubmitEdit = (event) => {
+    event.preventDefault();
+    console.log(event.target.email.value);
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const rname = event.target.name.value;
+    const address = event.target.address.value;
+    const minspend = event.target.minspend.value;
+    if (
+      email == "" ||
+      password == "" ||
+      address == "" ||
+      rname == "" ||
+      minspend == ""
+    ) {
+      alert("Make sure all fields are not null");
+      return;
+    }
+    API.put("/put/restauranttodb", {
+      rname: rname,
+      email: email,
+      password: password,
+      address: address,
+      minspend: minspend,
+      rid: this.state.id,
+    })
+      .then(() => this.fetchUserData())
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+
   render() {
     return (
       <Container>
@@ -47,6 +87,77 @@ export class RestaurantView extends Component {
         <h1>Restaurant</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
+        <br />
+
+        <Jumbotron>
+          <h2>Edit Restaurant</h2>
+          <br />
+          <Form onSubmit={this.handleSubmitEdit}>
+            <Form.Group as={Row} name="formPlaintextEmail">
+              <Form.Label column sm="2">
+                Email
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="email" placeholder={this.state.email} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Password
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="password" placeholder={""} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextName">
+              <Form.Label column sm="2">
+                Restaurant Name
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="name" placeholder={this.state.rname} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextAddress">
+              <Form.Label column sm="2">
+                Restaurant Address
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="address" placeholder={this.state.address} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextMinSpend">
+              <Form.Label column sm="2">
+                Minimum Spend
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control
+                  type="number"
+                  name="minspend"
+                  placeholder={this.state.minspend}
+                />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} controlId="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Edit
+              </Form.Label>
+              <Col sm="100">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  style={{ marginLeft: 15 }}
+                >
+                  Confirm
+                </Button>
+              </Col>
+            </Form.Group>
+          </Form>
+        </Jumbotron>
         <br />
         <Kitchen {...this.state}></Kitchen>
         <br />
@@ -75,7 +186,7 @@ class User extends Component {
             {"Email: " + (this.props.email == null ? " - " : this.props.email)}
           </ListGroup.Item>
           <ListGroup.Item>
-            {"Points: " +
+            {"Minimum Spend: " +
               (this.props.minspend == null ? " - " : this.props.minspend)}
           </ListGroup.Item>
         </ListGroup>

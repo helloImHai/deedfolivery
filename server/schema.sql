@@ -293,7 +293,6 @@ INSERT INTO Assigns VALUES
     (1, 1, 1, null, null, null, null, 2, 1),
     (2, 2, 4, null, null, null, null, 2, 1),
     (3, 3, 1, null, null, null, null, 2, 1),
-    (4, 1, 1, null, null, null, null, 2, 1),
     (5, 5, 1, null, null, null, null, 2, 1);
 
 INSERT INTO Promotions VALUES

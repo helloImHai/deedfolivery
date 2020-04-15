@@ -25,14 +25,12 @@ router.get("/api/get/customer", (req, res) => {
           message: "This is an error!",
         });
       }
-      console.log(q_res.rows);
       res.json(q_res.rows);
     }
   );
 });
 
 router.post("/api/post/customertodb", (req, res, next) => {
-  console.log("Posted");
   const values = [req.body.username, req.body.password];
   pool.query(
     `INSERT INTO customers(username, password)
@@ -54,7 +52,6 @@ router.post("/api/post/customertodb", (req, res, next) => {
 /*------------------------------------ MANAGER ------------------------------------ */
 
 router.post("/api/post/managertodb", (req, res, next) => {
-  console.log("Posted");
   const values = [req.body.username, req.body.password];
   pool.query(
     `INSERT INTO managers(username, password)
@@ -63,6 +60,25 @@ router.post("/api/post/managertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/managertodb", (req, res) => {
+  const { mname, email, password, mid } = req.body;
+  pool.query(
+    `UPDATE managers SET 
+    mname = $1, email = $2, password = $3
+    where mid = $4
+    returning mname;`,
+    [mname, email, password, mid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -82,7 +98,6 @@ router.get("/api/get/manager", (req, res) => {
 /*------------------------------------ RESTAURANT ------------------------------------ */
 
 router.post("/api/post/restauranttodb", (req, res, next) => {
-  console.log("Posted");
   const values = [req.body.username, req.body.password];
   pool.query(
     `INSERT INTO restaurants(username, password)
@@ -91,6 +106,25 @@ router.post("/api/post/restauranttodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/restauranttodb", (req, res) => {
+  const { rname, email, password, address, minspend, rid } = req.body;
+  pool.query(
+    `UPDATE restaurants SET 
+    rname = $1, email = $2, password = $3, address = $4, minspend = $5 
+    where rid = $6
+    returning rname;`,
+    [rname, email, password, address, minspend, rid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -114,7 +148,6 @@ router.get("/api/get/restaurantwithpassword", (req, res) => {
     `SELECT * FROM restaurants WHERE username = $1 and password = $2`,
     [username, password],
     (q_err, q_res) => {
-      // console.log(q_res);
       res.json(q_res.rows);
     }
   );
@@ -125,13 +158,11 @@ router.get("/api/get/restaurantwithpassword", (req, res) => {
 router.get("/api/get/fooditemsbyrid", (req, res) => {
   const rid = req.query.rid;
   pool.query(`SELECT * FROM sells WHERE rid = $1`, [rid], (q_err, q_res) => {
-    // console.log(q_res);
     res.json(q_res.rows);
   });
 });
 
 router.post("/api/post/fooditemtodb", (req, res, next) => {
-  console.log("Posted");
   const values = [
     req.body.rid,
     req.body.iname,
@@ -167,7 +198,6 @@ router.delete("/api/delete/fooditembyiid", (req, res) => {
         message: "This is an error!",
       });
     }
-    console.log("Deleted item with iid", values[0]);
     res.json("Delete successful");
   });
 });
@@ -175,7 +205,6 @@ router.delete("/api/delete/fooditembyiid", (req, res) => {
 /*------------------------------------ RIDER ------------------------------------ */
 
 router.post("/api/post/ridertodb", (req, res, next) => {
-  console.log("Posted");
   const values = [req.body.username, req.body.password];
   pool.query(
     `INSERT INTO riders(username, password)
@@ -184,6 +213,25 @@ router.post("/api/post/ridertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/ridertodb", (req, res) => {
+  const { ridername, email, password, riderid } = req.body;
+  pool.query(
+    `UPDATE riders SET 
+    ridername = $1, email = $2, password = $3
+    where riderid = $4
+    returning ridername;`,
+    [ridername, email, password, riderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -244,27 +292,24 @@ router.get("/api/get/assignedordersbymid", (req, res) => {
 
 router.get("/api/get/assignedordersbyriderid", (req, res) => {
   const riderid = req.query.riderid;
-  console.log("riderid", riderid);
   pool.query(
     `SELECT * FROM assigns a, orders o
-    WHERE riderid = $1 AND a.oid = o.oid`,
+    WHERE riderid = $1 AND a.oid = o.oid
+    ORDER BY accepttime DESC`,
     [riderid],
     (q_err, q_res) => {
       if (q_err) {
-        console.log("Error");
         return res.status(400).send({
           message: "This is an error!",
         });
       }
       res.json(q_res.rows);
-      console.log(q_res.rows);
     }
   );
 });
 
 router.post("/api/post/assigntodb", (req, res) => {
   const { rid, oid, mid, managerFee, riderFee } = req.body;
-  console.log(req.body);
   pool.query(
     `INSERT INTO assigns(riderid, oid, mid, managerFee, riderFee)
     VALUES($1, $2, $3, $4, $5)

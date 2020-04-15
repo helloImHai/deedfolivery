@@ -8,6 +8,7 @@ import {
   Table,
   Form,
   Col,
+  Row,
 } from "react-bootstrap";
 import API from "../api";
 import Logout from "./Logout";
@@ -40,6 +41,29 @@ export class ManagerView extends Component {
     this.fetchUserData();
   }
 
+  handleSubmitEdit = (event) => {
+    event.preventDefault();
+    console.log(event.target.email.value);
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const mname = event.target.name.value;
+    console.log(this.state.id, email, password, mname);
+    if (email == "" || password == "" || mname == "") {
+      alert("Make sure all fields are not null");
+      return;
+    }
+    API.put("/put/managertodb", {
+      mname: mname,
+      email: email,
+      password: password,
+      mid: this.state.id,
+    })
+      .then(() => this.fetchUserData())
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+
   render() {
     return (
       <Container>
@@ -47,6 +71,55 @@ export class ManagerView extends Component {
         <h1>Manager</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
+        <br />
+
+        <Jumbotron>
+          <h2>Edit Manager Details</h2>
+          <br />
+          <Form onSubmit={this.handleSubmitEdit}>
+            <Form.Group as={Row} name="formPlaintextEmail">
+              <Form.Label column sm="2">
+                Email
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="email" placeholder={this.state.email} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Password
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="password" placeholder={""} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextName">
+              <Form.Label column sm="2">
+                Manager Name
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="name" placeholder={this.state.rname} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} controlId="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Edit
+              </Form.Label>
+              <Col sm="100">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  style={{ marginLeft: 15 }}
+                >
+                  Confirm
+                </Button>
+              </Col>
+            </Form.Group>
+          </Form>
+        </Jumbotron>
         <br />
         <RidersList {...this.state} />
         <br />
@@ -263,13 +336,13 @@ class User extends Component {
         <p>Welcome to our application.</p>
         <ListGroup variant="flush">
           <ListGroup.Item>
+            {"Name: " + (this.props.mname == null ? " - " : this.props.mname)}
+          </ListGroup.Item>
+          <ListGroup.Item>
             {"ID: " + (this.props.id == null ? " - " : this.props.id)}
           </ListGroup.Item>
           <ListGroup.Item>
             {"Email: " + (this.props.email == null ? " - " : this.props.email)}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            {"Name: " + (this.props.mname == null ? " - " : this.props.mname)}
           </ListGroup.Item>
         </ListGroup>
       </Jumbotron>

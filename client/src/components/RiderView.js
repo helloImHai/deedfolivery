@@ -7,6 +7,8 @@ import {
   ListGroup,
   Table,
   Form,
+  Row,
+  Col,
 } from "react-bootstrap";
 import moment from "moment";
 import API from "../api";
@@ -20,7 +22,7 @@ export class RiderView extends Component {
     id: -1,
   };
 
-  fetchUserData = () => {
+  fetchUserData() {
     API.get("/get/rider", {
       params: { username: this.props.username },
     })
@@ -37,11 +39,33 @@ export class RiderView extends Component {
       .catch((err) => {
         alert(err.message);
       });
-  };
+  }
 
   componentWillMount() {
     this.fetchUserData();
   }
+
+  handleSubmitEdit = (event) => {
+    event.preventDefault();
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const ridername = event.target.name.value;
+    // console.log(this.state.id, email, password, mname);
+    if (email == "" || password == "" || ridername == "") {
+      alert("Make sure all fields are not null");
+      return;
+    }
+    API.put("/put/ridertodb", {
+      ridername: ridername,
+      email: email,
+      password: password,
+      riderid: this.state.id,
+    })
+      .then(() => this.fetchUserData())
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
 
   render() {
     return (
@@ -50,6 +74,54 @@ export class RiderView extends Component {
         <h1>Rider</h1>
         <br />
         <User {...this.state} username={this.props.username}></User>
+        <br />
+        <Jumbotron>
+          <h2>Edit Rider Details</h2>
+          <br />
+          <Form onSubmit={this.handleSubmitEdit}>
+            <Form.Group as={Row} name="formPlaintextEmail">
+              <Form.Label column sm="2">
+                Email
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="email" placeholder={this.state.email} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Password
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="password" placeholder={""} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} name="formPlaintextName">
+              <Form.Label column sm="2">
+                Rider Name
+              </Form.Label>
+              <Col sm="10">
+                <Form.Control name="name" placeholder={this.state.rname} />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} controlId="formPlaintextPassword">
+              <Form.Label column sm="2">
+                Edit
+              </Form.Label>
+              <Col sm="100">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  style={{ marginLeft: 15 }}
+                >
+                  Confirm
+                </Button>
+              </Col>
+            </Form.Group>
+          </Form>
+        </Jumbotron>
         <br />
         <PendingAssignments {...this.state} />
         <br />
@@ -89,14 +161,17 @@ class PendingAssignments extends Component {
         alert(err.message);
       });
   };
-
   submitAcceptTime = () => {
     event.preventDefault();
     const orderid = event.target.orderid.value;
     API.put("/put/accepttime", {
       accepttime: Date.now(),
       orderid: orderid,
-    }).then(() => this.fetchDeliveries(this.state.riderid));
+    })
+      .then(() => this.fetchDeliveries(this.state.riderid))
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   submitReachedTime = () => {
     event.preventDefault();
@@ -104,7 +179,11 @@ class PendingAssignments extends Component {
     API.put("/put/reachedtime", {
       reachedtime: Date.now(),
       orderid: orderid,
-    }).then(() => this.fetchDeliveries(this.state.riderid));
+    })
+      .then(() => this.fetchDeliveries(this.state.riderid))
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   submitLeaveTime = () => {
     event.preventDefault();
@@ -112,7 +191,11 @@ class PendingAssignments extends Component {
     API.put("/put/leavetime", {
       leavetime: Date.now(),
       orderid: orderid,
-    }).then(() => this.fetchDeliveries(this.state.riderid));
+    })
+      .then(() => this.fetchDeliveries(this.state.riderid))
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   submitDeliveryTime = () => {
     event.preventDefault();
@@ -120,7 +203,11 @@ class PendingAssignments extends Component {
     API.put("/put/deliverytime", {
       deliverytime: Date.now(),
       orderid: orderid,
-    }).then(() => this.fetchDeliveries(this.state.riderid));
+    })
+      .then(() => this.fetchDeliveries(this.state.riderid))
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   render() {
