@@ -31,7 +31,7 @@ export class LoginView extends Component {
         }
       })
       .catch((err) => {
-        alert(err.message);
+        alert("Please check that your username and password has no spaces!");
       });
   };
   handleSignIn = () => {
