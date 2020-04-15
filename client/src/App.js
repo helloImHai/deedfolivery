@@ -8,6 +8,7 @@ import RestaurantView from "./components/RestaurantView";
 import { Route, Switch } from "react-router-dom";
 import ManagerView from "./components/ManagerView";
 import RiderView from "./components/RiderView";
+import MenuView from "./components/MenuView";
 
 export default class App extends Component {
   componentDidMount() {
@@ -25,6 +26,7 @@ export default class App extends Component {
           <Route path="/restaurant" component={RestaurantView} />
           <Route path="/manager" component={ManagerView} />
           <Route path="/rider" component={RiderView} />
+          <Route path="/menuview" component={MenuView} />
         </Switch>
       </Provider>
     );
