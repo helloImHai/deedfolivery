@@ -22,7 +22,8 @@ export class RiderView extends Component {
     id: -1,
   };
 
-  fetchUserData() {
+  fetchUserData = () => {
+    console.log("Fetch data");
     API.get("/get/rider", {
       params: { username: this.props.username },
     })
@@ -39,7 +40,7 @@ export class RiderView extends Component {
       .catch((err) => {
         alert(err.message);
       });
-  }
+  };
 
   componentWillMount() {
     this.fetchUserData();
@@ -50,7 +51,6 @@ export class RiderView extends Component {
     const email = event.target.email.value;
     const password = event.target.password.value;
     const ridername = event.target.name.value;
-    // console.log(this.state.id, email, password, mname);
     if (email == "" || password == "" || ridername == "") {
       alert("Make sure all fields are not null");
       return;
@@ -134,6 +134,7 @@ export class RiderView extends Component {
 class PendingAssignments extends Component {
   state = {
     riderid: -1,
+    delivered: 0,
     assignments: [],
   };
 
@@ -154,6 +155,7 @@ class PendingAssignments extends Component {
         this.setState({
           ...this.state,
           assignments: res.data,
+          delivered: res.data.filter((x) => x.deliverytime != null).length,
         });
         console.log("assign", this.state);
       })
@@ -205,6 +207,9 @@ class PendingAssignments extends Component {
       orderid: orderid,
     })
       .then(() => this.fetchDeliveries(this.state.riderid))
+      .then(() => {
+        API.put("/put/updatedelivered", { riderid: this.state.riderid });
+      })
       .catch((err) => {
         alert(err.message);
       });
@@ -214,6 +219,7 @@ class PendingAssignments extends Component {
     return (
       <div>
         <h2>Deliveries</h2>
+        <h3>Successful deliveries: {this.state.delivered}</h3>
         <br />
         <Table id="pendingDeliveries">
           <tbody>
@@ -323,10 +329,6 @@ class User extends Component {
           </ListGroup.Item>
           <ListGroup.Item>
             {"Email: " + (this.props.email == null ? " - " : this.props.email)}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            {"Number Items Delivered: " +
-              (this.props.delivered == null ? " - " : this.props.delivered)}
           </ListGroup.Item>
         </ListGroup>
       </Jumbotron>

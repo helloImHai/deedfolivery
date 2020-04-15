@@ -215,53 +215,53 @@ CREATE TABLE PWorks (
 
 ---------------------- POPULATE DATA ------------------------------------------------------------------------
 
-INSERT INTO Customers VALUES
-    (1, 'Duong', 'duong', 'duong@gmail.com', 'duongpass', '51 PHT', 0, 1234),
-    (2, 'Hai', 'hai', 'hai@gmail.com', 'haipass', '15 Balmoral Park', 0, 2345),
-    (3, 'Hung', 'hung', 'hung@gmail.com', 'hungpass', '6 Tembusu', 0, 3456),
-    (4, 'Hoang', 'hoang', 'hoang@gmail.com', 'hoangpass', 'nigga', 0, 4567),
-    (5, 'Christian', 'cjw', 'christian@gmail.com', 'christianpass', 'amortized', 0, 2345);
+INSERT INTO Customers(cname, username, email, password, address, points, card) VALUES
+    ('Duong', 'duong', 'duong@gmail.com', 'duongpass', '51 PHT', 0, 1234),
+    ('Hai', 'hai', 'hai@gmail.com', 'haipass', '15 Balmoral Park', 0, 2345),
+    ('Hung', 'hung', 'hung@gmail.com', 'hungpass', '6 Tembusu', 0, 3456),
+    ('Hoang', 'hoang', 'hoang@gmail.com', 'hoangpass', 'nigga', 0, 4567),
+    ('Christian', 'cjw', 'christian@gmail.com', 'christianpass', 'amortized', 0, 2345);
 
-INSERT INTO Restaurants VALUES
-    (1, 'KFC', 'kfc', 'kfc@gmail.com', 'kfcpass', '123 KFC', 5),
-    (2, 'Burger King', 'bk', 'bk@gmail.com', 'bkpass', '123 Burger King', 7),
-    (3, 'McDonald', 'md', 'md@gmail.com', 'mdpass', '123 McDonal', 5),
-    (4, 'Starbucks', 'sb', 'sb@gmail.com', 'sbpass', '123 Starbucks', 10),
-    (5, 'Koi', 'koi', 'koi@gmail.com', 'koipass', '123 Koi', 8);
+INSERT INTO Restaurants(rname, username, email, password, address, minspend) VALUES
+    ('KFC', 'kfc', 'kfc@gmail.com', 'kfcpass', '123 KFC', 5),
+    ('Burger King', 'bk', 'bk@gmail.com', 'bkpass', '123 Burger King', 7),
+    ('McDonald', 'md', 'md@gmail.com', 'mdpass', '123 McDonal', 5),
+    ('Starbucks', 'sb', 'sb@gmail.com', 'sbpass', '123 Starbucks', 10),
+    ('Koi', 'koi', 'koi@gmail.com', 'koipass', '123 Koi', 8);
 
-INSERT INTO Riders VALUES
-    (1, 'Tom Rider', 'tom', 'tom@gmail.com', 'tompass', 0),
-    (2, 'Jerry Rider', 'jerry', 'jerry@gmail.com', 'jerrypass', 0),
-    (3, 'Free Rider', 'free', 'free@gmail.com', 'freepass', 0),
-    (4, 'Ghost Rider', 'ghost', 'ghost@gmail.com', 'ghostpass', 0),
-    (5, 'Flynn Rider', 'flynn', 'flynn@gmail.com', 'flynnpass', 0),
-    (6, 'Grab Rider', 'grab', 'grab@gmail.com', 'grabpass', 0);
+INSERT INTO Riders(ridername, username, email, password, delivered) VALUES
+    ('Tom Rider', 'tom', 'tom@gmail.com', 'tompass', 0),
+    ('Jerry Rider', 'jerry', 'jerry@gmail.com', 'jerrypass', 0),
+    ('Free Rider', 'free', 'free@gmail.com', 'freepass', 0),
+    ('Ghost Rider', 'ghost', 'ghost@gmail.com', 'ghostpass', 0),
+    ('Flynn Rider', 'flynn', 'flynn@gmail.com', 'flynnpass', 0),
+    ('Grab Rider', 'grab', 'grab@gmail.com', 'grabpass', 0);
 
-INSERT INTO Managers VALUES
-    (1, 'Boss', 'boss', 'boss@gmail.com', 'bosspass'),
-    (2, 'Chief', 'chief', 'chief@gmail.com', 'chiefpass'),
-    (3, 'Man', 'man', 'man@gmail.com', 'manpass'),
-    (4, 'Ager', 'ager', 'ager@gmail.com', 'agerpass'),
-    (5, 'CJW', 'cjw', 'cjw@gmail.com', 'cjwpass');
+INSERT INTO Managers(mname, username, email, password) VALUES
+    ('Boss', 'boss', 'boss@gmail.com', 'bosspass'),
+    ('Chief', 'chief', 'chief@gmail.com', 'chiefpass'),
+    ('Man', 'man', 'man@gmail.com', 'manpass'),
+    ('Ager', 'ager', 'ager@gmail.com', 'agerpass'),
+    ('CJW', 'cjw', 'cjw@gmail.com', 'cjwpass');
 
-INSERT INTO Sells VALUES
-    (1, 1, 'chicken', 5, 100, 'main'),
-    (2, 1, 'ice cream', 2, 100, 'dessert'),
-    (3, 2, 'burger', 6, 100, 'main'),
-    (4, 2, 'coke', 3, 100, 'drink'),
-    (5, 3, 'burger', 5, 100, 'main'),
-    (6, 3, 'coke', 2, 100, 'drink'),
-    (7, 4, 'coffee', 6, 100, 'hot'),
-    (8, 4, 'frape', 6, 100, 'cold'),
-    (9, 5, 'tea', 4, 100, 'cold'),
-    (10, 5, 'coffe', 4, 100, 'hot');
+INSERT INTO Sells(rid, item, price, quantity, category) VALUES
+    (1, 'chicken', 5, 100, 'main'),
+    (1, 'ice cream', 2, 100, 'dessert'),
+    (2, 'burger', 6, 100, 'main'),
+    (2, 'coke', 3, 100, 'drink'),
+    (3, 'burger', 5, 100, 'main'),
+    (3, 'coke', 2, 100, 'drink'),
+    (4, 'coffee', 6, 100, 'hot'),
+    (4, 'frape', 6, 100, 'cold'),
+    (5, 'tea', 4, 100, 'cold'),
+    (5, 'coffe', 4, 100, 'hot');
 
-INSERT INTO Orders VALUES
-    (1, 'cash', null, 8, 7, '15 Balmoral Park'),
-    (2, 'cash', null, 12, 9, '15 Balmoral Park'),
-    (3, 'card', 2345, 10, 7, '15 Balmoral Park'),
-    (4, 'cash', null, 11, 12, 'SOC'),
-    (5, 'card', 1234, 11, 8, 'Eusoff');
+INSERT INTO Orders(paytype, card, cost, reward, address) VALUES
+    ('cash', null, 8, 7, '15 Balmoral Park'),
+    ('cash', null, 12, 9, '15 Balmoral Park'),
+    ('card', 2345, 10, 7, '15 Balmoral Park'),
+    ('cash', null, 11, 12, 'SOC'),
+    ('card', 1234, 11, 8, 'Eusoff');
 
 INSERT INTO Lists VALUES
     (1, 1, 1),

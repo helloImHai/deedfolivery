@@ -242,6 +242,26 @@ router.put("/api/put/ridertodb", (req, res) => {
   );
 });
 
+router.put("/api/put/updatedelivered", (req, res) => {
+  console.log("Put!");
+  const { riderid } = req.body;
+  pool.query(
+    `UPDATE riders SET 
+    delivered = (select count(*) from assigns where riderid = $1 and deliverytime IS NOT NULL)
+    where riderid = $1
+    returning ridername;`,
+    [riderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
 router.get("/api/get/rider", (req, res) => {
   const username = req.query.username;
   pool.query(
