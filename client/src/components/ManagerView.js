@@ -214,8 +214,8 @@ class PendingOrders extends Component {
       rid: riderid,
       oid: orderid,
       mid: this.props.id,
-      managerFee: price * 0.02,
-      riderFee: price * 0.05,
+      managerFee: (price * 0.02) / 1.07,
+      riderFee: (price * 0.05) / 1.07,
     })
       .then(() => this.fetchPendingOrders())
       .catch((err) => {

@@ -384,7 +384,8 @@ router.post("/api/post/assigntodb", (req, res) => {
 router.put("/api/put/accepttime", (req, res) => {
   const { orderid, accepttime } = req.body;
   pool.query(
-    `UPDATE assigns SET accepttime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    `UPDATE assigns SET accepttime = to_timestamp($1 / 1000.0) where oid = $2
+    returning accepttime;`,
     [accepttime, orderid],
     (q_err, q_res) => {
       if (q_err) {
@@ -400,7 +401,8 @@ router.put("/api/put/accepttime", (req, res) => {
 router.put("/api/put/reachedtime", (req, res) => {
   const { orderid, reachedtime } = req.body;
   pool.query(
-    `UPDATE assigns SET reachedtime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    `UPDATE assigns SET reachedtime = to_timestamp($1 / 1000.0) where oid = $2
+    returning reachedtime;`,
     [reachedtime, orderid],
     (q_err, q_res) => {
       if (q_err) {
@@ -416,7 +418,8 @@ router.put("/api/put/reachedtime", (req, res) => {
 router.put("/api/put/leavetime", (req, res) => {
   const { orderid, leavetime } = req.body;
   pool.query(
-    `UPDATE assigns SET leavetime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    `UPDATE assigns SET leavetime = to_timestamp($1 / 1000.0) where oid = $2
+    returning leavetime;`,
     [leavetime, orderid],
     (q_err, q_res) => {
       if (q_err) {
@@ -432,7 +435,8 @@ router.put("/api/put/leavetime", (req, res) => {
 router.put("/api/put/deliverytime", (req, res) => {
   const { orderid, deliverytime } = req.body;
   pool.query(
-    `UPDATE assigns SET deliverytime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    `UPDATE assigns SET deliverytime = to_timestamp($1 / 1000.0) where oid = $2
+    returning deliverytime;`,
     [deliverytime, orderid],
     (q_err, q_res) => {
       if (q_err) {
@@ -447,13 +451,10 @@ router.put("/api/put/deliverytime", (req, res) => {
 
 /*------------------------------------ Menu ------------------------------------ */
 router.get("/api/get/restaurantName", (req, res) => {
-  pool.query(
-    `SELECT rname FROM restaurants`,
-    (q_err, q_res) => {
-      console.log(q_res);
-      res.json(q_res.rows);
-    }
-  );
+  pool.query(`SELECT rname FROM restaurants`, (q_err, q_res) => {
+    console.log(q_res);
+    res.json(q_res.rows);
+  });
 });
 
 module.exports = router;

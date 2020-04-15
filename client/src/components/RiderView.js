@@ -182,6 +182,11 @@ class PendingAssignments extends Component {
       reachedtime: Date.now(),
       orderid: orderid,
     })
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert("You must accept the order first!");
+        }
+      })
       .then(() => this.fetchDeliveries(this.state.riderid))
       .catch((err) => {
         alert(err.message);
@@ -194,6 +199,13 @@ class PendingAssignments extends Component {
       leavetime: Date.now(),
       orderid: orderid,
     })
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert(
+            "You must indicate that you have reached the restaurant first!"
+          );
+        }
+      })
       .then(() => this.fetchDeliveries(this.state.riderid))
       .catch((err) => {
         alert(err.message);
@@ -206,6 +218,11 @@ class PendingAssignments extends Component {
       deliverytime: Date.now(),
       orderid: orderid,
     })
+      .then((res) => {
+        if (res.data.length == 0) {
+          alert("You must indicate that you have left the restaurant first!");
+        }
+      })
       .then(() => this.fetchDeliveries(this.state.riderid))
       .then(() => {
         API.put("/put/updatedelivered", { riderid: this.state.riderid });
