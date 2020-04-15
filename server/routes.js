@@ -10,6 +10,11 @@ router.get("/api/hello", (req, res) => {
 
 router.get("/api/get/allcustomers", (req, res) => {
   pool.query(`SELECT * FROM customers`, (q_err, q_res) => {
+    if (q_err) {
+      return res.status(400).send({
+        message: q_err.message,
+      });
+    }
     res.json(q_res.rows);
   });
 });
@@ -22,7 +27,7 @@ router.get("/api/get/customer", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -41,7 +46,7 @@ router.post("/api/post/customertodb", (req, res, next) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -67,7 +72,7 @@ router.post("/api/post/custupdatetodb", (req, res, next) => {
       if (q_err) {
         console.log(q_err);
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       if (q_res.rows.length == 0) {
@@ -90,6 +95,11 @@ router.post("/api/post/managertodb", (req, res, next) => {
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -106,7 +116,7 @@ router.put("/api/put/managertodb", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -120,6 +130,11 @@ router.get("/api/get/manager", (req, res) => {
     `SELECT * FROM managers WHERE username = $1`,
     [username],
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -138,7 +153,7 @@ router.post("/api/post/restauranttodb", (req, res, next) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -157,7 +172,7 @@ router.put("/api/put/restauranttodb", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -171,6 +186,11 @@ router.get("/api/get/restaurant", (req, res) => {
     `SELECT * FROM restaurants WHERE username = $1`,
     [username],
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -183,6 +203,11 @@ router.get("/api/get/restaurantwithpassword", (req, res) => {
     `SELECT * FROM restaurants WHERE username = $1 and password = $2`,
     [username, password],
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -193,6 +218,11 @@ router.get("/api/get/restaurantwithpassword", (req, res) => {
 router.get("/api/get/fooditemsbyrid", (req, res) => {
   const rid = req.query.rid;
   pool.query(`SELECT * FROM sells WHERE rid = $1`, [rid], (q_err, q_res) => {
+    if (q_err) {
+      return res.status(400).send({
+        message: q_err.message,
+      });
+    }
     res.json(q_res.rows);
   });
 });
@@ -213,7 +243,7 @@ router.post("/api/post/fooditemtodb", (req, res, next) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       if (q_res.rows.length == 0) {
@@ -230,7 +260,7 @@ router.delete("/api/delete/fooditembyiid", (req, res) => {
   pool.query(`DELETE FROM sells where iid = $1`, values, (q_err, q_res) => {
     if (q_err) {
       return res.status(400).send({
-        message: "This is an error!",
+        message: q_err.message,
       });
     }
     res.json("Delete successful");
@@ -242,12 +272,17 @@ router.delete("/api/delete/fooditembyiid", (req, res) => {
 router.post("/api/post/ridertodb", (req, res, next) => {
   const values = [req.body.username, req.body.password];
   pool.query(
-    `INSERT INTO riders(username, password)
-              VALUES($1, $2)
+    `INSERT INTO riders(username, password, delivered)
+              VALUES($1, $2, 0)
               ON CONFLICT(username) DO NOTHING
               RETURNING (username)`,
     values,
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -264,7 +299,7 @@ router.put("/api/put/ridertodb", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -284,7 +319,7 @@ router.put("/api/put/updatedelivered", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -298,6 +333,11 @@ router.get("/api/get/rider", (req, res) => {
     `SELECT * FROM riders WHERE username = $1`,
     [username],
     (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: q_err.message,
+        });
+      }
       res.json(q_res.rows);
     }
   );
@@ -305,6 +345,11 @@ router.get("/api/get/rider", (req, res) => {
 
 router.get("/api/get/allriders", (req, res) => {
   pool.query(`SELECT * FROM riders`, (q_err, q_res) => {
+    if (q_err) {
+      return res.status(400).send({
+        message: q_err.message,
+      });
+    }
     res.json(q_res.rows);
   });
 });
@@ -318,7 +363,7 @@ router.get("/api/get/allpendingorders", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -337,7 +382,7 @@ router.get("/api/get/assignedordersbymid", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -355,7 +400,7 @@ router.get("/api/get/assignedordersbyriderid", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -373,7 +418,7 @@ router.post("/api/post/assigntodb", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -390,7 +435,7 @@ router.put("/api/put/accepttime", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -407,7 +452,7 @@ router.put("/api/put/reachedtime", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -424,7 +469,7 @@ router.put("/api/put/leavetime", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -441,7 +486,7 @@ router.put("/api/put/deliverytime", (req, res) => {
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({
-          message: "This is an error!",
+          message: q_err.message,
         });
       }
       res.json(q_res.rows);
@@ -452,7 +497,11 @@ router.put("/api/put/deliverytime", (req, res) => {
 /*------------------------------------ Menu ------------------------------------ */
 router.get("/api/get/restaurantName", (req, res) => {
   pool.query(`SELECT rname FROM restaurants`, (q_err, q_res) => {
-    console.log(q_res);
+    if (q_err) {
+      return res.status(400).send({
+        message: q_err.message,
+      });
+    }
     res.json(q_res.rows);
   });
 });
@@ -463,6 +512,11 @@ module.exports = router;
 router.get("/api/get/placeitembycid", (req, res) => {
   const cid = req.query.caseid;
   pool.query(`SELECT * FROM places WHERE cid = $1`, [cid], (q_err, q_res) => {
+    if (q_err) {
+      return res.status(400).send({
+        message: q_err.message,
+      });
+    }
     // console.log(q_res);
     res.json(q_res.rows);
   });

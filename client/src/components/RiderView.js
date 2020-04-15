@@ -341,7 +341,7 @@ class User extends Component {
         <p>Welcome to our application.</p>
         <ListGroup variant="flush">
           <ListGroup.Item>
-            {"Delivered: " +
+            {"Rider Name: " +
               (this.props.name == null ? " - " : this.props.name)}
           </ListGroup.Item>
           <ListGroup.Item>
