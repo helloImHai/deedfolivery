@@ -242,6 +242,26 @@ router.get("/api/get/assignedordersbymid", (req, res) => {
   );
 });
 
+router.get("/api/get/assignedordersbyriderid", (req, res) => {
+  const riderid = req.query.riderid;
+  console.log("riderid", riderid);
+  pool.query(
+    `SELECT * FROM assigns a, orders o
+    WHERE riderid = $1 AND a.oid = o.oid`,
+    [riderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        console.log("Error");
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+      console.log(q_res.rows);
+    }
+  );
+});
+
 router.post("/api/post/assigntodb", (req, res) => {
   const { rid, oid, mid, managerFee, riderFee } = req.body;
   console.log(req.body);
@@ -250,6 +270,70 @@ router.post("/api/post/assigntodb", (req, res) => {
     VALUES($1, $2, $3, $4, $5)
     RETURNING (mid);`,
     [rid, oid, mid, managerFee, riderFee],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/accepttime", (req, res) => {
+  const { orderid, accepttime } = req.body;
+  pool.query(
+    `UPDATE assigns SET accepttime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    [accepttime, orderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/reachedtime", (req, res) => {
+  const { orderid, reachedtime } = req.body;
+  pool.query(
+    `UPDATE assigns SET reachedtime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    [reachedtime, orderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/leavetime", (req, res) => {
+  const { orderid, leavetime } = req.body;
+  pool.query(
+    `UPDATE assigns SET leavetime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    [leavetime, orderid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/deliverytime", (req, res) => {
+  const { orderid, deliverytime } = req.body;
+  pool.query(
+    `UPDATE assigns SET deliverytime = to_timestamp($1 / 1000.0) where oid = $2;`,
+    [deliverytime, orderid],
     (q_err, q_res) => {
       if (q_err) {
         return res.status(400).send({

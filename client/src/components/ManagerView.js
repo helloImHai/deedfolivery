@@ -28,6 +28,7 @@ export class ManagerView extends Component {
           ...this.state,
           id: res.data[0].mid,
           email: res.data[0].email,
+          mname: res.data[0].mname,
         });
       })
       .catch((err) => {
@@ -266,6 +267,9 @@ class User extends Component {
           </ListGroup.Item>
           <ListGroup.Item>
             {"Email: " + (this.props.email == null ? " - " : this.props.email)}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            {"Name: " + (this.props.mname == null ? " - " : this.props.mname)}
           </ListGroup.Item>
         </ListGroup>
       </Jumbotron>
