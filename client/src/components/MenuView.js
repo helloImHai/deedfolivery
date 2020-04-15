@@ -64,27 +64,7 @@ class MenuView extends Component {
   render() {
     return (
         <div>
-       <header className="top-navbar">
-		<nav className="navbar navbar-expand-lg navbar-light bg-light">
-			<div className="container">
-				<a className="navbar-brand" href="index.html">
-					<img src="images/logo.png" alt="" />
-				</a>
-				<button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-rs-food" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
-				  <span className="navbar-toggler-icon"></span>
-				</button>
-				<div className="collapse navbar-collapse" id="navbars-rs-food">
-					<ul className="navbar-nav ml-auto">
-						<li className="nav-item"><a className="nav-link" href="/">Home</a></li>
-						<li className="nav-item active"><a className="nav-link" href="">Menu</a></li>
-						<li className="nav-item"><a className="nav-link" href="">About</a></li>
-						<li className="nav-item"><a className="nav-link" href="">Contact</a></li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-	</header>
-    <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
         <label>
           Select a Restaurant:
           <select value={this.state.selectedRestaurant}
