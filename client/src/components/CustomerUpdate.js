@@ -89,6 +89,17 @@ class OrderItem extends Component {
       <Table id="students">
         <tbody>
           <tr>
+          <td>
+          <Button
+            variant="primary"
+            style={{ marginRight: "10px" }}
+            onClick={this.props.fetchSellsItems}
+          >
+            Update
+          </Button>
+          </td>
+          </tr>
+          <tr>
             <th>Oid</th>
             <th>Payment Type</th>
             <th>Cost</th>
@@ -101,14 +112,13 @@ class OrderItem extends Component {
               <td>{item.paytype}</td>
               <td>{item.cost}</td>
               <td>{item.address}</td>
-
               <td><Button onClick={this.handleSend.bind(this, item)}>
                 Send
               </Button></td>
             </tr>
           ))}
           <tr>
-          <td><input type="text" placeholder="Review" onChange={this.handleReviewChange} value={this.state.review}/> <input type="text" placeholder="Ratings" value={this.state.ratings} onChange={this.handleRatingChange}/></td>
+          <td><input type="text" placeholder="Review" onChange={this.handleReviewChange} value={this.state.review}/> <input type="number" min='1' max='5' placeholder="Ratings" value={this.state.ratings} onChange={this.handleRatingChange}/></td>
           </tr>
         </tbody>
       </Table>
