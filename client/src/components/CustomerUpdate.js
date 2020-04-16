@@ -4,7 +4,9 @@ import API from "../api";
 
 export default class CustomerUpdate extends Component {
   state = {
+    cid: -1,
     sellsItems: [],
+
   };
 
 
@@ -16,6 +18,7 @@ export default class CustomerUpdate extends Component {
       params: { cid: nextProps.id },
     }).then((res) => {
       console.log("data for res", res);
+      this.state.cid = nextProps.id;
       this.setState({ ...this.state, sellsItems: res.data });
     });
   }
@@ -32,6 +35,8 @@ export default class CustomerUpdate extends Component {
   componentWillReceiveProps(nextProps) {
     this.fetchOrderData(nextProps);
   }
+
+
 
   render() {
     console.log(this.state);
@@ -51,6 +56,34 @@ export default class CustomerUpdate extends Component {
 }
 
 class OrderItem extends Component {
+  state ={
+    review: "",
+    ratings: ""
+  }
+  handleSend = (item) => {
+    console.log(item);
+    API.post("/post/giveReview", {
+      review : this.state.review,
+      ratings: this.state.ratings,
+      cid: item.cid,
+      oid: item.oid
+    }).then((res) =>{
+        alert("Added!");
+    }).catch((err) => {
+      alert("You have Reviewed this");
+    });
+  }
+  handleReviewChange = (event) => {
+    console.log(event)
+    this.setState({
+      review: event.target.value
+    });
+  };
+  handleRatingChange = (event) => {
+    this.setState({
+      ratings: event.target.value
+    });
+  };
   render() {
     return (
       <Table id="students">
@@ -60,6 +93,7 @@ class OrderItem extends Component {
             <th>Payment Type</th>
             <th>Cost</th>
             <th>Address</th>
+            <th>Review</th>
           </tr>
           {this.props.sellsItems.map((item) => (
             <tr key={item.oid}>
@@ -67,10 +101,15 @@ class OrderItem extends Component {
               <td>{item.paytype}</td>
               <td>{item.cost}</td>
               <td>{item.address}</td>
-              <td>
-              </td>
+
+              <td><Button onClick={this.handleSend.bind(this, item)}>
+                Send
+              </Button></td>
             </tr>
           ))}
+          <tr>
+          <td><input type="text" placeholder="Review" onChange={this.handleReviewChange} value={this.state.review}/> <input type="text" placeholder="Ratings" value={this.state.ratings} onChange={this.handleRatingChange}/></td>
+          </tr>
         </tbody>
       </Table>
     );
