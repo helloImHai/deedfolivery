@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { Button } from "react-bootstrap";
+import { resetState } from "../actions/userActions";
+import { connect } from "react-redux";
 
-export default class Logout extends Component {
+class Logout extends Component {
   handleLogout = () => {
-    // TODO REFRESH ALL STATES
+    this.props.resetState();
     this.props.history.push(`/`);
   };
   render() {
@@ -18,3 +20,15 @@ export default class Logout extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    resetState: () => {
+      dispatch(resetState());
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Logout);

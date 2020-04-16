@@ -16,7 +16,9 @@ import {
 
 export class LoginView extends Component {
   handleSignUp = () => {
-    API.post(`http://localhost:5000/api/post/${this.props.userType}todb`, {
+    let userType =
+      this.props.userType == undefined ? "customer" : this.props.userType;
+    API.post(`http://localhost:5000/api/post/${userType}todb`, {
       username: this.props.username,
       password: this.props.password,
     })
@@ -31,11 +33,13 @@ export class LoginView extends Component {
         }
       })
       .catch((err) => {
-        alert(err.message);
+        alert("Please check that your username and password has no spaces!");
       });
   };
   handleSignIn = () => {
-    API.get(`http://localhost:5000/api/get/${this.props.userType}`, {
+    let userType =
+      this.props.userType == undefined ? "customer" : this.props.userType;
+    API.get(`http://localhost:5000/api/get/${userType}`, {
       params: { username: this.props.username },
     })
       .then((res) => {

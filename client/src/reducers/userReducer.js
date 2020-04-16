@@ -1,13 +1,14 @@
 import {
   UPDATE_PASSWORD,
   UPDATE_USERNAME,
-  UPDATE_USER_TYPE
+  UPDATE_USER_TYPE,
+  RESET_STATE,
 } from "../actions/types.js";
 
 const initialState = {
   username: "",
   password: "",
-  userType: "customer"
+  userType: "customer",
 };
 
 export default (state = initialState, { type, payload }) => {
@@ -18,6 +19,8 @@ export default (state = initialState, { type, payload }) => {
       return { ...state, password: payload };
     case UPDATE_USER_TYPE:
       return { ...state, userType: payload };
+    case RESET_STATE:
+      return { ...state, username: "", password: "", userType: "customer" };
     default:
       return state;
   }
