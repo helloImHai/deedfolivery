@@ -175,6 +175,7 @@ router.post("/api/post/fooditemtodb", (req, res, next) => {
               RETURNING (item)`,
     values,
     (q_err, q_res) => {
+      console.log(q_err);
       if (q_err) {
         return res.status(400).send({
           message: "This is an error!",
@@ -309,6 +310,7 @@ router.post("/api/post/assigntodb", (req, res) => {
       res.json(q_res.rows);
     }
   );
+
 });
 
 router.put("/api/put/accepttime", (req, res) => {
@@ -390,9 +392,127 @@ module.exports = router;
 
 /*------------------------------------ Places ------------------------------------ */
 router.get("/api/get/placeitembycid", (req, res) => {
-  const cid = req.query.caseid;
-  pool.query(`SELECT * FROM places WHERE cid = $1`, [cid], (q_err, q_res) => {
-    // console.log(q_res);
-    res.json(q_res.rows);
+  console.log(req.query);
+  const cid = req.query.cid;
+  pool.query(`SELECT * FROM places
+      INNER JOIN orders
+      ON orders.oid = places.oid
+      WHERE places.cid = $1;`,[cid], (q_err, q_res) => {
+        console.log(q_res);
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+  });
+});
+
+router.post("/api/post/placeOrder", (req, res) => {
+  const { paytype, card, cost, address} = req.body;
+  console.log(req.body);
+  pool.query(
+    `INSERT INTO orders(oid, paytype, card, cost, reward, address)
+      VALUES ((SELECT COUNT(*) from orders) + 1,$1, $2, $3, $4, $5)
+      RETURNING(oid)`,
+    [paytype, card, cost, Math.round(cost), address],
+    (q_err, q_res) => {
+      if (q_err) {
+        console.log(q_err);
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.post("/api/post/placePlaces", (req, res) => {
+  const { custId, orderId } = req.body;
+  console.log(req.body);
+  pool.query(
+    `INSERT INTO places(cid, oid, orderTime)
+      VALUES ($1,$2, CURRENT_TIMESTAMP)
+      RETURNING(cid)`,
+    [custId, orderId],
+    (q_err, q_res) => {
+      if (q_err) {
+        console.log(q_err);
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.post("/api/post/placeList", (req, res) => {
+  const { oid, iid, quantity} = req.body;
+  console.log(req.body);
+  pool.query(
+    `INSERT INTO lists(oid, iid, quantity)
+      VALUES ($1,$2, $3)
+      RETURNING iid, quantity;`,
+    [oid, iid, quantity],
+    (q_err, q_res) => {
+      if (q_err) {
+        console.log(q_err);
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+router.put("/api/put/removeStock", (req, res) => {
+  const { quan, iid } = req.body;
+  pool.query(
+    `UPDATE  sells SET quantity = quantity - $1
+    WHERE iid = $2;`,
+    [quan, iid],
+    (q_err, q_res) => {
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+    }
+  );
+});
+
+
+router.get("/api/get/orderNotAssign", (req, res) => {
+  pool.query(`SELECT t1.oid, t1.paytype, t1.card, t1.cost, t1.address
+      FROM orders t1
+      LEFT JOIN assigns t2 ON t2.oid = t1.oid
+      WHERE t2.oid IS NULL`, (q_err, q_res) => {
+        console.log(q_res);
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+  });
+});
+/*------------------------------------ Food ------------------------------------ */
+router.get("/api/get/foodName", (req, res) => {
+  const rname = req.query.rname;
+  pool.query(`SELECT * FROM sells
+      INNER JOIN restaurants
+      ON restaurants.rid = sells.rid
+      WHERE restaurants.rname = $1;`,[rname], (q_err, q_res) => {
+        console.log(q_res);
+      if (q_err) {
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
   });
 });
