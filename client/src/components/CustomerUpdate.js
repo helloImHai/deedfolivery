@@ -15,8 +15,8 @@ export default class CustomerUpdate extends Component {
     API.get("/get/placeitembycid", {
       params: { cid: nextProps.id },
     }).then((res) => {
+      console.log("data for res", res);
       this.setState({ ...this.state, sellsItems: res.data });
-      console.log("data", res.data);
     });
   }
 
@@ -25,7 +25,7 @@ export default class CustomerUpdate extends Component {
       params: { cid: this.props.id },
     }).then((res) => {
       this.setState({ ...this.state, sellsItems: res.data });
-      console.log("data", res.data);
+      console.log("data for res", res.data);
     });
   };
 
@@ -37,7 +37,7 @@ export default class CustomerUpdate extends Component {
     console.log(this.state);
     return (
       <div>
-        <h3>Your order items!</h3>
+        <h3>Your past orders</h3>
         <br></br>
         <OrderItem
           cid={this.props.id}
@@ -51,34 +51,23 @@ export default class CustomerUpdate extends Component {
 }
 
 class OrderItem extends Component {
-  handleDelete = (item) => {
-    console.log("deleting", item);
-    console.log(this.props.rid);
-    API.delete("/delete/fooditembyiid", {
-      data: { iid: item.iid },
-    }).then(() => this.props.fetchFoodItems());
-  };
   render() {
     return (
       <Table id="students">
         <tbody>
           <tr>
-            <th>Cid</th>
             <th>Oid</th>
             <th>Payment Type</th>
             <th>Cost</th>
             <th>Address</th>
           </tr>
           {this.props.sellsItems.map((item) => (
-            <tr key={item.cid}>
+            <tr key={item.oid}>
               <td>{item.oid}</td>
               <td>{item.paytype}</td>
               <td>{item.cost}</td>
               <td>{item.address}</td>
               <td>
-                <Button onClick={this.handleDelete.bind(this, item)}>
-                  Delete
-                </Button>
               </td>
             </tr>
           ))}

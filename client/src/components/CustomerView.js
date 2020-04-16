@@ -35,7 +35,7 @@ export class CustomerView extends Component {
   };
 
   handleUpdateCustItem = (event) => {
-    
+
     API.post("/post/custupdatetodb", {
       cid: this.state.id,
       custname: this.state.newCustName,
@@ -131,7 +131,7 @@ export class CustomerView extends Component {
           </Form.Row>
         </Form>
         <h2> Order Menu </h2>
-        <MenuView></MenuView>
+        <MenuView {...this.state}></MenuView>
         <Logout history={this.props.history}></Logout>
       </Container>
     );
