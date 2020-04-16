@@ -95,6 +95,12 @@ class MenuView extends Component {
         this.state.Selectediid = this.state.food[i].iid;
       }
     };
+    let check = this.state.food.filter(element => (element.value == this.state.selectedFood));
+    console.log(check);
+    if(check == null){
+      alert("Different restaurant");
+      return
+    }
     var temp = {id: this.state.orderId + 1, food: this.state.selectedFood, amt: this.state.amt, cost: this.state.selectedFoodCost, fid: this.state.Selectediid};
     this.state.orderId = this.state.orderId + 1;
     this.state.totalCost += (this.state.amt * this.state.selectedFoodCost);
@@ -170,33 +176,38 @@ class MenuView extends Component {
 
 
   handlefind = (event) => {
-    API.get(`http://localhost:5000/api/get/foodName`
-      , {
-        params: { rname: this.state.selectedRestaurant },
+    if(this.state.order.length == 0){
+      API.get(`http://localhost:5000/api/get/foodName`
+        , {
+          params: { rname: this.state.selectedRestaurant },
+        })
+        .then((res) => {
+          return res.data
+      }).then(data => {
+        let resFromApi2 = data.map(food => {
+          return { value: food.item, display: food.item, iid: food.iid, quan: food.quantity, cost: food.price};
+        });
+        console.log(resFromApi2);
+        this.setState({
+          food: [
+            {
+              value: "",
+              display:
+                "(Select a food)",
+              id: "",
+              quantity: "",
+              cost: ""
+            }
+          ].concat(resFromApi2)
+        });
       })
-      .then((res) => {
-        return res.data
-    }).then(data => {
-      let resFromApi2 = data.map(food => {
-        return { value: food.item, display: food.item, iid: food.iid, quan: food.quantity, cost: food.price};
+      .catch(error => {
+        console.log(error);
       });
-      console.log(resFromApi2);
-      this.setState({
-        food: [
-          {
-            value: "",
-            display:
-              "(Select a food)",
-            id: "",
-            quantity: "",
-            cost: ""
-          }
-        ].concat(resFromApi2)
-      });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    } else {
+      alert("You cannot order from different restaurant");
+    }
+
   }
 
   render() {

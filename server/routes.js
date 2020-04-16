@@ -636,3 +636,20 @@ router.get("/api/get/foodName", (req, res) => {
       res.json(q_res.rows);
   });
 });
+
+/*------------------------------------ Review ------------------------------------ */
+router.post("/api/post/giveReview", (req, res) => {
+  const { review, ratings, cid, oid } = req.body;
+  console.log(req.body);
+  pool.query(`INSERT INTO reviews
+    VALUES ($1,$2, $3, $4)`,[cid, oid, review, ratings], (q_err, q_res) => {
+        console.log(q_res);
+      if (q_err) {
+        console.log(q_err);
+        return res.status(400).send({
+          message: "This is an error!",
+        });
+      }
+      res.json(q_res.rows);
+  });
+});
