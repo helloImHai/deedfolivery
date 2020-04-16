@@ -6,10 +6,7 @@ export default class CustomerUpdate extends Component {
   state = {
     cid: -1,
     sellsItems: [],
-
   };
-
-
 
   fetchOrderData(nextProps) {
     console.log("fetching customer data");
@@ -36,8 +33,6 @@ export default class CustomerUpdate extends Component {
     this.fetchOrderData(nextProps);
   }
 
-
-
   render() {
     console.log(this.state);
     return (
@@ -56,32 +51,34 @@ export default class CustomerUpdate extends Component {
 }
 
 class OrderItem extends Component {
-  state ={
+  state = {
     review: "",
-    ratings: ""
-  }
+    ratings: "1",
+  };
   handleSend = (item) => {
-    console.log(item);
+    console.log(item, this.state);
     API.post("/post/giveReview", {
-      review : this.state.review,
+      review: this.state.review,
       ratings: this.state.ratings,
       cid: item.cid,
-      oid: item.oid
-    }).then((res) =>{
+      oid: item.oid,
+    })
+      .then((res) => {
         alert("Added!");
-    }).catch((err) => {
-      alert("You have Reviewed this");
-    });
-  }
+      })
+      .catch((err) => {
+        alert("You have Reviewed this");
+      });
+  };
   handleReviewChange = (event) => {
-    console.log(event)
+    console.log(event);
     this.setState({
-      review: event.target.value
+      review: event.target.value,
     });
   };
   handleRatingChange = (event) => {
     this.setState({
-      ratings: event.target.value
+      ratings: event.target.value,
     });
   };
   render() {
@@ -89,15 +86,15 @@ class OrderItem extends Component {
       <Table id="students">
         <tbody>
           <tr>
-          <td>
-          <Button
-            variant="primary"
-            style={{ marginRight: "10px" }}
-            onClick={this.props.fetchSellsItems}
-          >
-            Update
-          </Button>
-          </td>
+            <td>
+              <Button
+                variant="primary"
+                style={{ marginRight: "10px" }}
+                onClick={this.props.fetchSellsItems}
+              >
+                Update
+              </Button>
+            </td>
           </tr>
           <tr>
             <th>Oid</th>
@@ -112,13 +109,32 @@ class OrderItem extends Component {
               <td>{item.paytype}</td>
               <td>{item.cost}</td>
               <td>{item.address}</td>
-              <td><Button onClick={this.handleSend.bind(this, item)}>
-                Send
-              </Button></td>
+              <td>
+                <Button onClick={this.handleSend.bind(this, item)}>Send</Button>
+              </td>
             </tr>
           ))}
           <tr>
-          <td><input type="text" placeholder="Review" onChange={this.handleReviewChange} value={this.state.review}/> <input type="number" min='1' max='5' placeholder="Ratings" value={this.state.ratings} onChange={this.handleRatingChange}/></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Review"
+                onChange={this.handleReviewChange}
+                value={this.state.review}
+              />
+              <select
+                type="number"
+                placeholder="Ratings"
+                value={this.state.ratings}
+                onChange={this.handleRatingChange}
+              >
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </td>
           </tr>
         </tbody>
       </Table>
