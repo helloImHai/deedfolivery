@@ -12,7 +12,8 @@ Clone this repo.
 2. Create a psql database called `testdb`
 3. Run `\i schema.sql`.
 4. Go back to the server directory.
-5. Run `yarn install` and `yarn start`.
+5. Check if `password` in db.js is correct.
+6. Run `yarn install` and `yarn start`.
 
 ### Client
 
